@@ -46,7 +46,6 @@ class Shop(models.Model):
         return self.name
 
 
-
 class CustomUserManager(BaseUserManager):
 
     def get_by_natural_key(self, email):

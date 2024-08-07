@@ -11,3 +11,6 @@ pip install psycopg2
 pip install psycopg2-binary  
 
 python manage.py migrate
+
+pip install pyyaml
+
