@@ -6,7 +6,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver, Signal
 from django_rest_passwordreset.signals import reset_password_token_created
 
-from models import ConfirmEmailToken, CustomUser
+from my_app.models import ConfirmEmailToken, CustomUser
 
 new_user_registered = Signal()
 
