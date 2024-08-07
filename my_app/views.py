@@ -14,6 +14,7 @@ import yaml
 def load_yaml(yaml_data):
     """
     Функция для загрузки данных из строки в формате YAML.
+    Преобразует их в словарь.
 
     :param yaml_data: Строка с данными в формате YAML.
     :return: Словарь с данными, преобразованными из YAML.
@@ -25,6 +26,9 @@ def load_yaml(yaml_data):
         print(f"Ошибка при загрузке YAML: {exc}")
         raise
     return data
+
+data = load_yaml(shop1.yaml)
+print(data)
 
 
 class PartnerUpdate(APIView):
