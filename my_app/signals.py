@@ -13,18 +13,18 @@ new_user_registered = Signal()
 new_order = Signal()
 
 
-@receiver(reset_password_token_created)
+@receiver(reset_password_token_created)  # отправляется после генерации токена сброса пароля, но до его отправки польз.
 def password_reset_token_created(sender, instance, reset_password_token, **kwargs):
     """
     Отправляем письмо с токеном для сброса пароля
-    When a token is created, an e-mail needs to be sent to the user
-    :param sender: View Class that sent the signal
+    Когда токен создан, пользователю необходимо отправить электронное письмо.
+    :param sender: View Class который послал сигнал
     :param instance: View Instance that sent the signal
     :param reset_password_token: Token Model Object
     :param kwargs:
     :return:
     """
-    # send an e-mail to the user
+    # отправить e-mail пользователю
 
     msg = EmailMultiAlternatives(
         # title:
@@ -42,10 +42,10 @@ def password_reset_token_created(sender, instance, reset_password_token, **kwarg
 @receiver(post_save, sender=CustomUser)
 def new_user_registered_signal(sender: Type[CustomUser], instance: CustomUser, created: bool, **kwargs):
     """
-     отправляем письмо с подтрердждением почты
+     Отправляем письмо с подтверждением почты.
     """
     if created and not instance.is_active:
-        # send an e-mail to the user
+        # # отправить e-mail пользователю
         token, _ = ConfirmEmailToken.objects.get_or_create(user_id=instance.pk)
 
         msg = EmailMultiAlternatives(
@@ -64,7 +64,7 @@ def new_user_registered_signal(sender: Type[CustomUser], instance: CustomUser, c
 @receiver(new_order)
 def new_order_signal(user_id, **kwargs):
     """
-    отправяем письмо при изменении статуса заказа
+    Отправляем письмо при изменении статуса заказа.
     """
     # send an e-mail to the user
     user = CustomUser.objects.get(id=user_id)
@@ -80,3 +80,4 @@ def new_order_signal(user_id, **kwargs):
         [user.email]
     )
     msg.send()
+    

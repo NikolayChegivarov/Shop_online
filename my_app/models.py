@@ -273,7 +273,7 @@ class ConfirmEmailToken(models.Model):
         verbose_name = 'Токен подтверждения Email'
         verbose_name_plural = 'Токены подтверждения Email'
 
-    @staticmethod
+    @staticmethod  # для создания статических методов внутри класса.
     def generate_key():
         """Генерирует псевдослучайный код, используя os.urandom и binascii.hexlify"""
         return get_token_generator().generate_token()
