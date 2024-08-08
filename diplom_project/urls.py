@@ -1,23 +1,16 @@
-from django.urls import path
-from django_rest_passwordreset.views import reset_password_request_token, reset_password_confirm
+"""netology_pd_diplom URL Configuration
 
-from my_app.views import *
+Список `urlpatterns` направляет URL-адреса в представления. Для получения дополнительной информации см.
+https://docs.djangoproject.com/en/2.2/topics/http/urls/ Примеры: Представления функций 1. Добавьте импорт:
+из представлений импорта my_app 2. Добавьте URL-адрес в urlpatterns: path( '',views.home, name='home')
+Представления на основе классов 1. Добавьте импорт: fromother_app.views import Home 2. Добавьте URL-адрес
+в urlpatterns: path('', Home.as_view(), name= 'home') Включение другого URLconf 1. Импортируйте функцию include():
+из django.urls import include, путь 2. Добавьте URL-адрес в urlpatterns: path('blog/', include('blog.urls'))
+"""
+from django.contrib import admin
+from django.urls import path, include
 
-app_name = 'backend'
 urlpatterns = [
-    path('partner/update', PartnerUpdate.as_view(), name='partner-update'),
-    path('partner/state', PartnerState.as_view(), name='partner-state'),
-    path('partner/orders', PartnerOrders.as_view(), name='partner-orders'),
-    path('user/register', RegisterAccount.as_view(), name='user-register'),
-    path('user/register/confirm', ConfirmAccount.as_view(), name='user-register-confirm'),
-    path('user/details', AccountDetails.as_view(), name='user-details'),
-    path('user/contact', ContactView.as_view(), name='user-contact'),
-    path('user/login', LoginAccount.as_view(), name='user-login'),
-    path('user/password_reset', reset_password_request_token, name='password-reset'),
-    path('user/password_reset/confirm', reset_password_confirm, name='password-reset-confirm'),
-    path('categories', CategoryView.as_view(), name='categories'),
-    path('shops', ShopView.as_view(), name='shops'),
-    path('products', ProductInfoView.as_view(), name='shops'),
-    path('basket', BasketView.as_view(), name='basket'),
-    path('order', OrderView.as_view(), name='order'),
+    path('admin/', admin.site.urls),
+    path('api/v1/', include('my_app.urls', namespace='my_app'))
 ]

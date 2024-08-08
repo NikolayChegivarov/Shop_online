@@ -1,4 +1,5 @@
 # from distutils.util import strtobool
+from ast import literal_eval
 from rest_framework.request import Request
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
@@ -31,13 +32,13 @@ class RegisterAccount(APIView):
 
     def post(self, request, *args, **kwargs):
         """
-            Process a POST request and create a new user.
+            Обработайте запрос POST и создайте нового пользователя
 
             Args:
                 request (Request): The Django request object.
 
             Returns:
-                JsonResponse: The response indicating the status of the operation and any errors.
+                JsonResponse: Ответ, указывающий статус операции и любые errors.
             """
         # проверяем обязательные аргументы
         if {'first_name', 'last_name', 'email', 'password', 'company', 'position'}.issubset(request.data):
@@ -102,11 +103,11 @@ class ConfirmAccount(APIView):
 
 class AccountDetails(APIView):
     """
-    A class for managing user account details.
+    Класс для управления данными учетной записи пользователя..
 
     Methods:
-    - get: Retrieve the details of the authenticated user.
-    - post: Update the account details of the authenticated user.
+    - get: Получить данные аутентифицированного пользователя.
+    - post: Обновите данные учетной записи аутентифицированного пользователя..
 
     Attributes:
     - None
@@ -396,7 +397,7 @@ class BasketView(APIView):
 
 class PartnerUpdate(APIView):
     """
-    A class for updating partner information.
+    Класс для обновления прайса от поставщика.
 
     Methods:
     - post: Update the partner information.
@@ -510,7 +511,7 @@ class PartnerState(APIView):
         state = request.data.get('state')
         if state:
             try:
-                Shop.objects.filter(user_id=request.user.id).update(state=strtobool(state))
+                Shop.objects.filter(user_id=request.user.id).update(state=literal_eval(state))
                 return JsonResponse({'Status': True})
             except ValueError as error:
                 return JsonResponse({'Status': False, 'Errors': str(error)})
@@ -673,7 +674,7 @@ class ContactView(APIView):
 
 class OrderView(APIView):
     """
-    Класс для получения и размешения заказов пользователями
+    Класс для получения и размещения заказов пользователями
     Methods:
     - get: Retrieve the details of a specific order.
     - post: Create a new order.
