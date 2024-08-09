@@ -98,10 +98,15 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=100, verbose_name='Фамилия', blank=True, null=True)
     first_name = models.CharField(max_length=100, verbose_name='Имя', blank=True, null=True)
     shop = models.ForeignKey(Shop, on_delete=models.SET_NULL, null=True, blank=True, related_name='users')
+    company = models.CharField(
+        verbose_name='Компания', max_length=40, blank=True
+    )
+    position = models.CharField(
+        verbose_name='Должность', max_length=40, blank=True
+    )
     is_active = models.BooleanField(default=True)  # Если не активен, то не сможет авторизоваться на сайте.
     is_staff = models.BooleanField(default=True)
     date_joined = models.DateTimeField(verbose_name='Дата регистрации', auto_now_add=True)
-
     groups = models.ManyToManyField(Group, verbose_name=_('groups'), blank=True, related_name="customuser_groups")
     user_permissions = models.ManyToManyField(Permission, verbose_name=_('user permissions'), blank=True,
                                               related_name="customuser_user_permissions")
