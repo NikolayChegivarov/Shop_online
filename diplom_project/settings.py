@@ -112,8 +112,8 @@ EMAIL_HOST = 'smtp.mail.ru'  # Адрес вашего SMTP сервера
 EMAIL_PORT = 465  # Порт SMTP сервера
 # EMAIL_USE_TLS = True  # Использование TLS для безопасного соединения
 EMAIL_USE_SSL = True  # Если вы используете SSL вместо TLS, раскомментируйте эту строку и закомментируйте EMAIL_USE_TLS
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_PASSWORD')  # Ваш адрес электронной почты
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Пароль от вашей почты, рекомендуется хранить в переменных окружения
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')  # Ваш адрес электронной почты
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Пароль от вашей почты, рекомендуется хранить в пер. окружения.
 
 
 # Internationalization

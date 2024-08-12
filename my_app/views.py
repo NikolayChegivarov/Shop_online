@@ -62,12 +62,10 @@ class RegisterAccount(APIView):
         if {'first_name', 'last_name', 'email', 'password', 'company', 'position'}.issubset(request.data):
 
             # проверяем пароль на сложность
-            sad = 'asd'
             try:
                 validate_password(request.data['password'])
             except Exception as password_error:
                 error_array = []
-                # noinspection PyTypeChecker
                 for item in password_error:
                     error_array.append(item)
                 return JsonResponse({'Status': False, 'Errors': {'password': error_array}})
@@ -119,6 +117,15 @@ class ConfirmAccount(APIView):
 
 
 class DeleteAccount(GenericAPIView):
+    """
+    Класс для удаления аккаунта пользователя..
+
+    Methods:
+    - delite: Удалить аккаунт.
+
+    Attributes:
+    - None
+    """
     # permission_classes = [IsAuthenticated]
     queryset = CustomUser.objects.all()
 
@@ -137,7 +144,7 @@ class DeleteAccount(GenericAPIView):
 
 class AccountDetails(APIView):
     """
-    Класс для управления данными учетной записи пользователя..
+    Класс для управления данными учетной записи пользователя.
 
     Methods:
     - get: Получить данные аутентифицированного пользователя.
@@ -150,7 +157,7 @@ class AccountDetails(APIView):
     # получить данные
     def get(self, request: Request, *args, **kwargs):
         """
-               Retrieve the details of the authenticated user.
+               Получить данные аутентифицированного пользователя.
 
                Args:
                - request (Request): The Django request object.
@@ -250,7 +257,7 @@ class ShopView(ListAPIView):
 
 class ProductInfoView(APIView):
     """
-        A class for searching products.
+        Класс для поиска товаров.
 
         Methods:
         - get: Retrieve the product information based on the specified filters.
@@ -450,12 +457,15 @@ class PartnerUpdate(APIView):
                 Returns:
                 - JsonResponse: The response indicating the status of the operation and any errors.
                 """
+        # Проверка пользователя на аутентификацию.
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
 
+        # Проверка на тип пользователя, магазин или нет.
         if request.user.type != 'shop':
             return JsonResponse({'Status': False, 'Error': 'Только для магазинов'}, status=403)
 
+        # Является ли предоставленный URL действительным.
         url = request.data.get('url')
         if url:
             validate_url = URLValidator()
@@ -555,7 +565,7 @@ class PartnerState(APIView):
 
 class PartnerOrders(APIView):
     """
-    Класс для получения заказов поставщиками
+    Класс для получения заказов поставщиками.
      Methods:
     - get: Retrieve the orders associated with the authenticated partner.
 

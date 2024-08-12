@@ -14,3 +14,8 @@ python manage.py migrate
 
 pip install pyyaml
 
+разобраться с авторизацией
+создать магазин
+загрузить прайс
+
+
