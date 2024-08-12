@@ -1,16 +1,16 @@
 import requests
 print("client")
 
-# Регистрируем клиента.
+# РЕГЕСТРИРУЕМ КЛИЕНТА.
 
 # Данные для регистрации пользователя
 data = {
     'first_name': 'Николай',
     'last_name': 'Гусаров',
-    'email': 'nikolai_polos@mail.ru',
+    'email': 'kolyapolosin85@gmail.com',
     'password': 'verystrongpassword123',
-    'company': 'Example Inc.',
-    'position': 'Developer'
+    'company': 'Efes',
+    'position': 'manager'
 }
 
 # Отправляем POST-запрос на регистрацию пользователя
@@ -22,5 +22,5 @@ if response.status_code == 200:
 else:
     print("Ошибка при регистрации:", response.status_code, response.text)
 
-
+# УДАЛЯЕМ КЛИЕНТА.
 

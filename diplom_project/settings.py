@@ -79,7 +79,7 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '5432',
         'USER': 'postgres',
-        'PASSWORD': os.getenv('PASSWORD'),
+        'PASSWORD': os.getenv('PASSWORD_DB'),
         'OPTIONS': {
             'client_encoding': 'UTF8',
             'options': '-c search_path=diplom'
@@ -105,6 +105,15 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# Настройка для отправки электронной почты
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.mail.ru'  # Адрес вашего SMTP сервера
+EMAIL_PORT = 465  # Порт SMTP сервера
+# EMAIL_USE_TLS = True  # Использование TLS для безопасного соединения
+EMAIL_USE_SSL = True  # Если вы используете SSL вместо TLS, раскомментируйте эту строку и закомментируйте EMAIL_USE_TLS
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_PASSWORD')  # Ваш адрес электронной почты
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Пароль от вашей почты, рекомендуется хранить в переменных окружения
 
 
 # Internationalization

@@ -13,6 +13,29 @@ new_user_registered = Signal()
 new_order = Signal()
 
 
+@receiver(post_save, sender=CustomUser)
+def new_user_registered_signal(sender: Type[CustomUser], instance: CustomUser, created: bool, **kwargs):
+    print('сигнал сработал')
+    """
+     Отправляем письмо с подтверждением почты.
+    """
+    if created and not instance.is_active:
+        # отправить e-mail пользователю
+        token, _ = ConfirmEmailToken.objects.get_or_create(user_id=instance.pk)
+
+        msg = EmailMultiAlternatives(
+            # title:
+            f"Password Reset Token for {instance.email}",
+            # message:
+            token.key,
+            # from:
+            settings.EMAIL_HOST_USER,
+            # to:
+            [instance.email]
+        )
+        msg.send()
+
+
 @receiver(reset_password_token_created)  # отправляется после генерации токена сброса пароля, но до его отправки польз.
 def password_reset_token_created(sender, instance, reset_password_token, **kwargs):
     """
@@ -37,28 +60,6 @@ def password_reset_token_created(sender, instance, reset_password_token, **kwarg
         [reset_password_token.user.email]
     )
     msg.send()
-
-
-@receiver(post_save, sender=CustomUser)
-def new_user_registered_signal(sender: Type[CustomUser], instance: CustomUser, created: bool, **kwargs):
-    """
-     Отправляем письмо с подтверждением почты.
-    """
-    if created and not instance.is_active:
-        # # отправить e-mail пользователю
-        token, _ = ConfirmEmailToken.objects.get_or_create(user_id=instance.pk)
-
-        msg = EmailMultiAlternatives(
-            # title:
-            f"Password Reset Token for {instance.email}",
-            # message:
-            token.key,
-            # from:
-            settings.EMAIL_HOST_USER,
-            # to:
-            [instance.email]
-        )
-        msg.send()
 
 
 @receiver(new_order)

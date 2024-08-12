@@ -21,6 +21,7 @@ from my_app.models import Shop, Category, Product, ProductInfo, Parameter, Produ
 from my_app.serializers import UserSerializer, CategorySerializer, ShopSerializer, ProductInfoSerializer, \
     OrderItemSerializer, OrderSerializer, ContactSerializer
 from my_app.signals import new_user_registered, new_order
+from rest_framework.decorators import api_view
 
 
 class RegisterAccount(APIView):
@@ -55,7 +56,6 @@ class RegisterAccount(APIView):
                 return JsonResponse({'Status': False, 'Errors': {'password': error_array}})
             else:
                 # проверяем данные для уникальности имени пользователя
-
                 user_serializer = UserSerializer(data=request.data)
                 if user_serializer.is_valid():
                     # сохраняем пользователя
@@ -167,6 +167,21 @@ class AccountDetails(APIView):
         else:
             return JsonResponse({'Status': False, 'Errors': user_serializer.errors})
 
+    @api_view(['POST'])
+    def delete_account(request: Request):
+        """
+        Delete account view.
+        """
+        if request.method == 'POST':
+            if not request.user.is_authenticated:
+                return Response({'Status': False, 'Error': 'Log in required'}, status=403)
+
+            try:
+                request.user.delete()
+                return Response({'Status': True})
+            except Exception as e:
+                return Response({'Status': False, 'Error': str(e)}, status=400)
+
 
 class LoginAccount(APIView):
     """
@@ -258,7 +273,7 @@ class ProductInfoView(APIView):
 
 class BasketView(APIView):
     """
-    A class for managing the user's shopping basket.
+    Класс для управления корзиной покупок пользователя..
 
     Methods:
     - get: Retrieve the items in the user's basket.
@@ -463,7 +478,7 @@ class PartnerUpdate(APIView):
 
 class PartnerState(APIView):
     """
-       A class for managing partner state.
+       Класс для управления состоянием партнера..
 
        Methods:
        - get: Retrieve the state of the partner.
@@ -557,7 +572,7 @@ class PartnerOrders(APIView):
 
 class ContactView(APIView):
     """
-       A class for managing contact information.
+       Класс для управления контактной информацией..
 
        Methods:
        - get: Retrieve the contact information of the authenticated user.
@@ -688,7 +703,7 @@ class OrderView(APIView):
     # получить мои заказы
     def get(self, request, *args, **kwargs):
         """
-               Retrieve the details of user orders.
+               Получить подробную информацию о заказах пользователей.
 
                Args:
                - request (Request): The Django request object.
@@ -710,7 +725,7 @@ class OrderView(APIView):
     # разместить заказ из корзины
     def post(self, request, *args, **kwargs):
         """
-               Put an order and send a notification.
+               Оформите заказ и отправьте уведомление.
 
                Args:
                - request (Request): The Django request object.
