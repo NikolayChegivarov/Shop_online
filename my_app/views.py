@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 from django.db import IntegrityError
 from django.db.models import Q, Sum, F
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from requests import get
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
@@ -16,12 +16,13 @@ from rest_framework.views import APIView
 from ujson import loads as load_json
 from yaml import load as load_yaml, Loader
 
-from my_app.models import Shop, Category, Product, ProductInfo, Parameter, ProductParameter, Order, OrderItem, \
+from my_app.models import Shop, CustomUser, Category, Product, ProductInfo, Parameter, ProductParameter, Order, OrderItem, \
     Contact, ConfirmEmailToken
 from my_app.serializers import UserSerializer, CategorySerializer, ShopSerializer, ProductInfoSerializer, \
     OrderItemSerializer, OrderSerializer, ContactSerializer
 from my_app.signals import new_user_registered, new_order
-from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import GenericAPIView
 
 
 class RegisterAccount(APIView):
@@ -101,6 +102,23 @@ class ConfirmAccount(APIView):
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
 
 
+class DeleteAccount(GenericAPIView):
+    # permission_classes = [IsAuthenticated]
+    queryset = CustomUser.objects.all()
+
+    def get_object(self, user_id):
+        try:
+            return CustomUser.objects.get(pk=user_id)
+        except CustomUser.DoesNotExist:
+            raise Http404("User does not exist")
+
+    def delete(self, request, *args, **kwargs):
+        user_id = self.kwargs['user_id']
+        user = self.get_object(user_id)
+        user.delete()
+        return Response({'Status': True}, status=204)
+
+
 class AccountDetails(APIView):
     """
     Класс для управления данными учетной записи пользователя..
@@ -133,7 +151,7 @@ class AccountDetails(APIView):
     # Редактирование методом POST
     def post(self, request, *args, **kwargs):
         """
-                Update the account details of the authenticated user.
+                Обновите данные учетной записи аутентифицированного пользователя..
 
                 Args:
                 - request (Request): The Django request object.
@@ -166,21 +184,6 @@ class AccountDetails(APIView):
             return JsonResponse({'Status': True})
         else:
             return JsonResponse({'Status': False, 'Errors': user_serializer.errors})
-
-    @api_view(['POST'])
-    def delete_account(request: Request):
-        """
-        Delete account view.
-        """
-        if request.method == 'POST':
-            if not request.user.is_authenticated:
-                return Response({'Status': False, 'Error': 'Log in required'}, status=403)
-
-            try:
-                request.user.delete()
-                return Response({'Status': True})
-            except Exception as e:
-                return Response({'Status': False, 'Error': str(e)}, status=400)
 
 
 class LoginAccount(APIView):
