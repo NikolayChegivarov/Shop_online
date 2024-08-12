@@ -8,6 +8,7 @@ from django.core.validators import URLValidator
 from django.db import IntegrityError
 from django.db.models import Q, Sum, F
 from django.http import JsonResponse, Http404
+from django.http import HttpResponse
 from requests import get
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
@@ -23,6 +24,21 @@ from my_app.serializers import UserSerializer, CategorySerializer, ShopSerialize
 from my_app.signals import new_user_registered, new_order
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import GenericAPIView
+from django.core.mail import send_mail
+
+
+class TestEmail(APIView):
+
+    def post(self, request):
+        print('письмо отправляется')
+        send_mail(
+            'Тестовое письмо',
+            'Это тестовое письмо, отправленное из Django.',
+            'nikolai_polos@mail.ru',  # Отправитель
+            ['kolyapolosin85@gmail.com'],  # Получатель
+            fail_silently=False,
+        )
+        return HttpResponse("Письмо отправлено")
 
 
 class RegisterAccount(APIView):
