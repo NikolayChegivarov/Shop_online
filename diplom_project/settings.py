@@ -107,13 +107,13 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Настройка для отправки электронной почты
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.mail.ru'  # Адрес вашего SMTP сервера
-EMAIL_PORT = 465  # Порт SMTP сервера
-# EMAIL_USE_TLS = True  # Использование TLS для безопасного соединения
-EMAIL_USE_SSL = True  # Если вы используете SSL вместо TLS, раскомментируйте эту строку и закомментируйте EMAIL_USE_TLS
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')  # Ваш адрес электронной почты
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Пароль от вашей почты, рекомендуется хранить в пер. окружения.
+EMAIL_PORT = 587  # Порт SMTP сервера
+EMAIL_USE_TLS = True  # Использование TLS для безопасного соединения
+# EMAIL_USE_SSL = True  # Если вы используете SSL вместо TLS, раскомментируйте эту строку и закомментируйте EMAIL_USE_TLS
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER_GOOGLE')  # Ваш адрес электронной почты
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD_GOOGLE')  # Пароль от вашей почты, рекомендуется хранить в пер. окружения.
 
 
 # Internationalization

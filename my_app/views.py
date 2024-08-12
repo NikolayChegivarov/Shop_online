@@ -27,18 +27,18 @@ from rest_framework.generics import GenericAPIView
 from django.core.mail import send_mail
 
 
-class TestEmail(APIView):
-
-    def post(self, request):
-        print('письмо отправляется')
-        send_mail(
-            'Тестовое письмо',
-            'Это тестовое письмо, отправленное из Django.',
-            'nikolai_polos@mail.ru',  # Отправитель
-            ['kolyapolosin85@gmail.com'],  # Получатель
-            fail_silently=False,
-        )
-        return HttpResponse("Письмо отправлено")
+# class TestEmail(APIView):
+#
+#     def post(self, request):
+#         print('письмо отправляется')
+#         send_mail(
+#             'Тестовое письмо',
+#             'Это тестовое письмо, отправленное из Django.',
+#             'nikolai_polos@mail.ru',  # Отправитель
+#             ['kolyapolosin85@gmail.com'],  # Получатель
+#             fail_silently=False,
+#         )
+#         return HttpResponse("Письмо отправлено")
 
 
 class RegisterAccount(APIView):
@@ -139,6 +139,7 @@ class DeleteAccount(GenericAPIView):
         user_id = self.kwargs['user_id']
         user = self.get_object(user_id)
         user.delete()
+        print('пользователь удален')
         return Response({'Status': True}, status=204)
 
 
