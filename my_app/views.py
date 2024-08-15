@@ -22,28 +22,13 @@ from my_app.models import Shop, CustomUser, Category, Product, ProductInfo, Para
 from my_app.serializers import UserSerializer, CategorySerializer, ShopSerializer, ProductInfoSerializer, \
     OrderItemSerializer, OrderSerializer, ContactSerializer
 from my_app.signals import new_user_registered, new_order
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import GenericAPIView
 from django.core.mail import send_mail
 
 
-# class TestEmail(APIView):
-#
-#     def post(self, request):
-#         print('письмо отправляется')
-#         send_mail(
-#             'Тестовое письмо',
-#             'Это тестовое письмо, отправленное из Django.',
-#             'nikolai_polos@mail.ru',  # Отправитель
-#             ['kolyapolosin85@gmail.com'],  # Получатель
-#             fail_silently=False,
-#         )
-#         return HttpResponse("Письмо отправлено")
-
-
 class RegisterAccount(APIView):
     """
-    Для регистрации покупателей
+    Для регистрации пользователя путем сохранения его в б.д
     """
 
     # Регистрация методом POST
@@ -77,6 +62,7 @@ class RegisterAccount(APIView):
                     user = user_serializer.save()
                     user.set_password(request.data['password'])
                     user.save()
+                    print(f'Пользователь с почтой {user.email} создан')
                     return JsonResponse({'Status': True})
                 else:
                     return JsonResponse({'Status': False, 'Errors': user_serializer.errors})
@@ -84,9 +70,9 @@ class RegisterAccount(APIView):
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
 
 
-class ConfirmAccount(APIView):
+class ConfirmEmail(APIView):
     """
-    Класс для подтверждения почтового адреса
+    Для подтверждения почтового адреса.
     """
 
     # Регистрация методом POST
@@ -102,13 +88,14 @@ class ConfirmAccount(APIView):
                 """
         # проверяем обязательные аргументы
         if {'email', 'token'}.issubset(request.data):
-
+            # Проверяем наличие токена.
             token = ConfirmEmailToken.objects.filter(user__email=request.data['email'],
                                                      key=request.data['token']).first()
             if token:
                 token.user.is_active = True
                 token.user.save()
                 token.delete()
+                print(f'Пользователь с почтой {token.user.email} авторизован.')
                 return JsonResponse({'Status': True})
             else:
                 return JsonResponse({'Status': False, 'Errors': 'Неправильно указан токен или email'})
@@ -116,9 +103,38 @@ class ConfirmAccount(APIView):
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
 
 
+class LoginAccount(APIView):
+    """
+    Класс для авторизации пользователей
+    """
+    # Авторизация методом POST
+    def post(self, request, *args, **kwargs):
+        """
+                Authenticate a user.
+
+                Args:
+                    request (Request): The Django request object.
+
+                Returns:
+                    JsonResponse: The response indicating the status of the operation and any errors.
+                """
+        if {'email', 'password'}.issubset(request.data):
+            user = authenticate(request, username=request.data['email'], password=request.data['password'])
+
+            if user is not None:
+                if user.is_active:
+                    token, _ = Token.objects.get_or_create(user=user)
+
+                    return JsonResponse({'Status': True, 'Token': token.key})
+
+            return JsonResponse({'Status': False, 'Errors': 'Не удалось авторизовать'})
+
+        return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
+
+
 class DeleteAccount(GenericAPIView):
     """
-    Класс для удаления аккаунта пользователя..
+    Для удаления аккаунта пользователя.
 
     Methods:
     - delite: Удалить аккаунт.
@@ -210,36 +226,6 @@ class AccountDetails(APIView):
             return JsonResponse({'Status': False, 'Errors': user_serializer.errors})
 
 
-class LoginAccount(APIView):
-    """
-    Класс для авторизации пользователей
-    """
-
-    # Авторизация методом POST
-    def post(self, request, *args, **kwargs):
-        """
-                Authenticate a user.
-
-                Args:
-                    request (Request): The Django request object.
-
-                Returns:
-                    JsonResponse: The response indicating the status of the operation and any errors.
-                """
-        if {'email', 'password'}.issubset(request.data):
-            user = authenticate(request, username=request.data['email'], password=request.data['password'])
-
-            if user is not None:
-                if user.is_active:
-                    token, _ = Token.objects.get_or_create(user=user)
-
-                    return JsonResponse({'Status': True, 'Token': token.key})
-
-            return JsonResponse({'Status': False, 'Errors': 'Не удалось авторизовать'})
-
-        return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
-
-
 class CategoryView(ListAPIView):
     """
     Класс для просмотра категорий
@@ -300,7 +286,7 @@ class ProductInfoView(APIView):
 
 class BasketView(APIView):
     """
-    Класс для управления корзиной покупок пользователя..
+    Класс для управления корзиной покупок пользователя.
 
     Methods:
     - get: Retrieve the items in the user's basket.
@@ -508,7 +494,7 @@ class PartnerUpdate(APIView):
 
 class PartnerState(APIView):
     """
-       Класс для управления состоянием партнера..
+       Класс для управления состоянием партнера.
 
        Methods:
        - get: Retrieve the state of the partner.
@@ -540,7 +526,7 @@ class PartnerState(APIView):
     # изменить текущий статус
     def post(self, request, *args, **kwargs):
         """
-               Update the state of a partner.
+               Обновить статус партнера.
 
                Args:
                - request (Request): The Django request object.
@@ -602,7 +588,7 @@ class PartnerOrders(APIView):
 
 class ContactView(APIView):
     """
-       Класс для управления контактной информацией..
+       Класс для управления контактной информацией.
 
        Methods:
        - get: Retrieve the contact information of the authenticated user.

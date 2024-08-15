@@ -104,8 +104,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     position = models.CharField(
         verbose_name='Должность', max_length=40, blank=True
     )
-    is_active = models.BooleanField(default=True)  # Если не активен, то не сможет авторизоваться на сайте.
-    is_staff = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)  # Если не активен, то не сможет авторизоваться на сайте.
+    is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(verbose_name='Дата регистрации', auto_now_add=True)
     groups = models.ManyToManyField(Group, verbose_name=_('groups'), blank=True, related_name="customuser_groups")
     user_permissions = models.ManyToManyField(Permission, verbose_name=_('user permissions'), blank=True,
@@ -269,7 +269,7 @@ class OrderItem(models.Model):
 
 
 class ConfirmEmailToken(models.Model):
-    """Для создания и хранения уникальных токенов, которые отправляются
+    """Для создания и сохранения уникальных токенов, которые отправляются
     пользователям по электронной почте для подтверждения их адреса электронной почты"""
     # Предоставляет интерфейс для взаимодействия с базой данных.
     objects = models.manager.Manager()
@@ -311,5 +311,3 @@ class ConfirmEmailToken(models.Model):
 
     def __str__(self):
         return "Токен сброса пароля для пользователя {user}".format(user=self.user)
-
-# django-rest-passwordreset==1.4.1

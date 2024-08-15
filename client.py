@@ -3,11 +3,11 @@ print("client")
 
 # РЕГЕСТРИРУЕМ КЛИЕНТА.
 
-# # Данные для регистрации пользователя
+# Данные для регистрации пользователя
 data = {
     'first_name': 'Александр',
     'last_name': 'Гусевский',
-    'email': 'nikolai_polos@mail.ru',
+    'email': 'kolyapolosin85@gmail.com',
     'password': 'verystrongpassword123',
     'company': 'Efes',
     'position': 'manager'
@@ -23,9 +23,9 @@ else:
     print("Ошибка при регистрации:", response.status_code, response.text)
 
 # УДАЛЯЕМ КЛИЕНТА.
-# response = requests.delete('http://localhost:8000/api/v1/user/delete/8/')
+# response = requests.delete('http://localhost:8000/api/v1/user/delete/24/')
 # print(response.status_code)
-#
+
 # # Проверяем статус ответа
 # if response.status_code == 204:  # 204 No Content - успешное удаление без возврата тела ответа
 #     print("Пользователь успешно удален.")

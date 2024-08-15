@@ -4,64 +4,60 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.db.models.signals import post_save
 from django.dispatch import receiver, Signal
-from django_rest_passwordreset.signals import reset_password_token_created
 
 from my_app.models import ConfirmEmailToken, CustomUser
 from django.core.mail import send_mail
+from django.contrib.auth import get_user_model
 
 new_user_registered = Signal()
 
 new_order = Signal()
 
 
+# @receiver(post_save, sender=CustomUser)
+# def new_user_registered_signal(sender: Type[CustomUser], instance: CustomUser, created: bool, **kwargs):
+#     print('сигнал сработал')
+#     """
+#      Отправляем письмо с подтверждением почты.
+#     """
+    # subject = 'Test Email'
+    # message = 'This is a test email sent from Django.'
+    # from_email = 'kolyapolosin85@gmail.com'
+    # recipient_list = ['nikolai_polos@mail.ru']
+    #
+    # send_mail(
+    #     subject,
+    #     message,
+    #     from_email,
+    #     recipient_list,
+    #     fail_silently=False,  # Выдать ошибку, если отправка не удалась
+    # )
+    # Получаем модель пользователя.
+
+
 @receiver(post_save, sender=CustomUser)
-def new_user_registered_signal(sender: Type[CustomUser], instance: CustomUser, created: bool, **kwargs):
-    print('сигнал сработал')
+def create_confirm_email_token_and_send_email(sender, instance, created, **kwargs):
     """
-     Отправляем письмо с подтверждением почты.
+    Для авторизации пользователя.
+
+    :param sender: Класс представления (View), который послал сигнал. В данном случае, CustomUser.
+    :param instance: Экземпляр класса CustomUser.
+    :param created: Булево значение, указывающее, был ли объект только что создан (True).
+    :param kwargs: Дополнительные аргументы, которые могут быть переданы вместе с сигналом.
     """
-    if created and not instance.is_active:
-        # отправить e-mail пользователю
-        token, _ = ConfirmEmailToken.objects.get_or_create(user_id=instance.pk)
 
-        subject = 'Test Email'
-        message = 'This is a test email sent from Django.'
-        from_email = 'kolyapolosin85@gmail.com'
-        recipient_list = ['nikolai_polos@mail.ru']
+    if created:
+        # Генерируем и сохраняем токен подтверждения.
+        token = ConfirmEmailToken.objects.create(user=instance)
+        print(f'Токен {token} сгенерирован.')
 
-        send_mail(
-            subject,
-            message,
-            from_email,
-            recipient_list,
-            fail_silently=False,  # Выдать ошибку, если отправка не удалась
-        )
+        # Создаём ссылку подтверждения.
+        confirmation_link = f"http://127.0.0.1:8000api/v1/user/confirm-email/{token.key}/"
 
-
-@receiver(reset_password_token_created)  # отправляется после генерации токена сброса пароля, но до его отправки польз.
-def password_reset_token_created(sender, instance, reset_password_token, **kwargs):
-    """
-    Отправляем письмо с токеном для сброса пароля
-    Когда токен создан, пользователю необходимо отправить электронное письмо.
-    :param sender: View Class который послал сигнал
-    :param instance: View Instance that sent the signal
-    :param reset_password_token: Token Model Object
-    :param kwargs:
-    :return:
-    """
-    # отправить e-mail пользователю
-
-    msg = EmailMultiAlternatives(
-        # title:
-        f"Password Reset Token for {reset_password_token.user}",
-        # message:
-        reset_password_token.key,
-        # from:
-        settings.EMAIL_HOST_USER,
-        # to:
-        [reset_password_token.user.email]
-    )
-    msg.send()
+        # Отправляем электронное письмо со ссылкой для подтверждения.
+        subject = 'Пожалуйста, подтвердите свой адрес электронной почты'
+        message = f'Чтобы подтвердить свой адрес электронной почты, перейдите по этой ссылке: {confirmation_link}'
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [instance.email])
 
 
 @receiver(new_order)
