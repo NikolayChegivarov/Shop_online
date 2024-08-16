@@ -8,31 +8,10 @@ from django.dispatch import receiver, Signal
 from my_app.models import ConfirmEmailToken, CustomUser
 from django.core.mail import send_mail
 from django.contrib.auth import get_user_model
+from urllib.parse import quote
 
-new_user_registered = Signal()
-
-new_order = Signal()
-
-
-# @receiver(post_save, sender=CustomUser)
-# def new_user_registered_signal(sender: Type[CustomUser], instance: CustomUser, created: bool, **kwargs):
-#     print('сигнал сработал')
-#     """
-#      Отправляем письмо с подтверждением почты.
-#     """
-    # subject = 'Test Email'
-    # message = 'This is a test email sent from Django.'
-    # from_email = 'kolyapolosin85@gmail.com'
-    # recipient_list = ['nikolai_polos@mail.ru']
-    #
-    # send_mail(
-    #     subject,
-    #     message,
-    #     from_email,
-    #     recipient_list,
-    #     fail_silently=False,  # Выдать ошибку, если отправка не удалась
-    # )
-    # Получаем модель пользователя.
+new_user_registered = Signal()  # Уведомляет о создании нового пользователя.
+new_order = Signal()  # Уведомляет о создании нового заказа.
 
 
 @receiver(post_save, sender=CustomUser)
@@ -49,15 +28,21 @@ def create_confirm_email_token_and_send_email(sender, instance, created, **kwarg
     if created:
         # Генерируем и сохраняем токен подтверждения.
         token = ConfirmEmailToken.objects.create(user=instance)
-        print(f'Токен {token} сгенерирован.')
+        email = instance.email
+
+        print(f'{token} сгенерирован.')
+        print('')
 
         # Создаём ссылку подтверждения.
-        confirmation_link = f"http://127.0.0.1:8000api/v1/user/confirm-email/{token.key}/"
+        # confirmation_link = f"http://127.0.0.1:8000/api/v1/user/confirm-email/{quote(token.key)}"
+        confirmation_link = f"http://127.0.0.1:8000/api/v1/user/confirm-email/?token={quote(token.key)}&email={quote(email)}"
 
         # Отправляем электронное письмо со ссылкой для подтверждения.
         subject = 'Пожалуйста, подтвердите свой адрес электронной почты'
         message = f'Чтобы подтвердить свой адрес электронной почты, перейдите по этой ссылке: {confirmation_link}'
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [instance.email])
+        print('Письмо пользователю отправлено.')
+        print('')
 
 
 @receiver(new_order)

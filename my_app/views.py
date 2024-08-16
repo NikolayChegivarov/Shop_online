@@ -1,6 +1,7 @@
 # from distutils.util import strtobool
 from ast import literal_eval
 from rest_framework.request import Request
+from rest_framework.response import JsonResponse
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -15,6 +16,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from ujson import loads as load_json
+from urllib.parse import quote
 from yaml import load as load_yaml, Loader
 
 from my_app.models import Shop, CustomUser, Category, Product, ProductInfo, Parameter, ProductParameter, Order, OrderItem, \
@@ -24,6 +26,7 @@ from my_app.serializers import UserSerializer, CategorySerializer, ShopSerialize
 from my_app.signals import new_user_registered, new_order
 from rest_framework.generics import GenericAPIView
 from django.core.mail import send_mail
+import json
 
 
 class RegisterAccount(APIView):
@@ -49,6 +52,8 @@ class RegisterAccount(APIView):
             # проверяем пароль на сложность
             try:
                 validate_password(request.data['password'])
+                email = request.data['email']
+                print(f'Пользователь с почтой {email} создан')
             except Exception as password_error:
                 error_array = []
                 for item in password_error:
@@ -62,7 +67,6 @@ class RegisterAccount(APIView):
                     user = user_serializer.save()
                     user.set_password(request.data['password'])
                     user.save()
-                    print(f'Пользователь с почтой {user.email} создан')
                     return JsonResponse({'Status': True})
                 else:
                     return JsonResponse({'Status': False, 'Errors': user_serializer.errors})
@@ -70,37 +74,66 @@ class RegisterAccount(APIView):
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
 
 
+# class ConfirmEmail(APIView):
+#     """
+#     Для подтверждения почтового адреса.
+#     """
+#     def get(self, request, *args, **kwargs):
+#         print('сигнал почта')
+#         print(request.data)
+#         """
+#                 Подтверждает почтовый адрес пользователя.
+#
+#                 Args:
+#                 - request (Request): The Django request object.
+#
+#                 Returns:
+#                 - JsonResponse: The response indicating the status of the operation and any errors.
+#                 """
+#         # проверяем обязательные аргументы
+#         if {'email', 'token'}.issubset(request.data):
+#             # Проверяем наличие токена.
+#             token = ConfirmEmailToken.objects.filter(user__email=request.data['email'],
+#                                                      key=request.data['token']).first()
+#             if token:
+#                 token.user.is_active = True
+#                 token.user.save()
+#                 token.delete()
+#                 print(f'Пользователь с почтой {token.user.email} авторизован.')
+#                 return JsonResponse({'Status': True})
+#             else:
+#                 return JsonResponse({'Status': False, 'Errors': 'Неправильно указан токен или email'})
+#
+#         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
+
+
+# from rest_framework.views import APIView
+# from rest_framework.response import JsonResponse
+# from django.contrib.auth.models import User
+# from .models import ConfirmEmailToken  # Assuming ConfirmEmailToken model is correctly defined
+
+
 class ConfirmEmail(APIView):
-    """
-    Для подтверждения почтового адреса.
-    """
+    def get(self, request, *args, **kwargs):
+        print(f' request {request.data}')
+        # Используем request.query_params для получения параметров запроса
+        email = request.query_params.get('email')
+        token = request.query_params.get('token')
 
-    # Регистрация методом POST
-    def post(self, request, *args, **kwargs):
-        """
-                Подтверждает почтовый адрес пользователя.
+        print(f'Email: {email}, Token: {token}')  # Для отладки
 
-                Args:
-                - request (Request): The Django request object.
-
-                Returns:
-                - JsonResponse: The response indicating the status of the operation and any errors.
-                """
-        # проверяем обязательные аргументы
-        if {'email', 'token'}.issubset(request.data):
-            # Проверяем наличие токена.
-            token = ConfirmEmailToken.objects.filter(user__email=request.data['email'],
-                                                     key=request.data['token']).first()
-            if token:
-                token.user.is_active = True
-                token.user.save()
-                token.delete()
-                print(f'Пользователь с почтой {token.user.email} авторизован.')
-                return JsonResponse({'Status': True})
+        if email and token:
+            confirm_email_token = ConfirmEmailToken.objects.filter(user__email=email, key=token).first()
+            if confirm_email_token:
+                confirm_email_token.user.is_active = True
+                confirm_email_token.user.save()
+                confirm_email_token.delete()
+                print(f'Пользователь с почтой {confirm_email_token.user.email} авторизован.')
+                return Response({'Status': True})
             else:
-                return JsonResponse({'Status': False, 'Errors': 'Неправильно указан токен или email'})
-
-        return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
+                return Response({'Status': False, 'Errors': 'Неправильно указан токен или email'}, status=400)
+        else:
+            return Response({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'}, status=400)
 
 
 class LoginAccount(APIView):

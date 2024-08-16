@@ -6,7 +6,7 @@ from my_app.views import *
 app_name = 'backend'
 urlpatterns = [
     path('user/register', RegisterAccount.as_view(), name='user-register'),  # Для регистрации пользователя.
-    path('user/confirm-email/<str:token_key>/', ConfirmEmail.as_view(), name='confirm-email'),  # Подтверждения E-mail.
+    path('user/confirm-email/', ConfirmEmail.as_view(), name='confirm-email'),  # Подтверждения E-mail.
     path('user/login', LoginAccount.as_view(), name='user-login'),  # Для авторизации пользователей.
     path('partner/state', PartnerState.as_view(), name='partner-state'),  # Класс для управления состоянием партнера.
 
