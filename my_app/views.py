@@ -34,14 +34,12 @@ class RegisterAccount(APIView):
     Для регистрации пользователя путем сохранения его в б.д
     """
 
-    # Регистрация методом POST
-
     def post(self, request, *args, **kwargs):
         """
             Обработайте запрос POST и создайте нового пользователя
 
             Args:
-                request (Request): The Django request object.
+                request: The Django request object.
 
             Returns:
                 JsonResponse: Ответ, указывающий статус операции и любые errors.
@@ -74,53 +72,21 @@ class RegisterAccount(APIView):
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
 
 
-# class ConfirmEmail(APIView):
-#     """
-#     Для подтверждения почтового адреса.
-#     """
-#     def get(self, request, *args, **kwargs):
-#         print('сигнал почта')
-#         print(request.data)
-#         """
-#                 Подтверждает почтовый адрес пользователя.
-#
-#                 Args:
-#                 - request (Request): The Django request object.
-#
-#                 Returns:
-#                 - JsonResponse: The response indicating the status of the operation and any errors.
-#                 """
-#         # проверяем обязательные аргументы
-#         if {'email', 'token'}.issubset(request.data):
-#             # Проверяем наличие токена.
-#             token = ConfirmEmailToken.objects.filter(user__email=request.data['email'],
-#                                                      key=request.data['token']).first()
-#             if token:
-#                 token.user.is_active = True
-#                 token.user.save()
-#                 token.delete()
-#                 print(f'Пользователь с почтой {token.user.email} авторизован.')
-#                 return JsonResponse({'Status': True})
-#             else:
-#                 return JsonResponse({'Status': False, 'Errors': 'Неправильно указан токен или email'})
-#
-#         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
-
-
-# from rest_framework.views import APIView
-# from rest_framework.response import JsonResponse
-# from django.contrib.auth.models import User
-# from .models import ConfirmEmailToken  # Assuming ConfirmEmailToken model is correctly defined
-
-
 class ConfirmEmail(APIView):
+    """
+    APIView для подтверждения электронной почты пользователя.
+    При успешном подтверждении аккаунт активируется.
+
+    Methods:
+        GET: Подтверждение электронной почты через токен.
+    """
     def get(self, request, *args, **kwargs):
         print(f' request {request.data}')
         # Используем request.query_params для получения параметров запроса
         email = request.query_params.get('email')
         token = request.query_params.get('token')
 
-        print(f'Email: {email}, Token: {token}')  # Для отладки
+        print(f'Email: {email}, Token: {token}')
 
         if email and token:
             confirm_email_token = ConfirmEmailToken.objects.filter(user__email=email, key=token).first()
@@ -138,19 +104,14 @@ class ConfirmEmail(APIView):
 
 class LoginAccount(APIView):
     """
-    Класс для авторизации пользователей
+    Для входа в систему пользователя.
+    Возвращает токен для последующего использования.
+
+    Methods:
+        POST: Аутентификация пользователя по электронной почте и паролю.
     """
     # Авторизация методом POST
     def post(self, request, *args, **kwargs):
-        """
-                Authenticate a user.
-
-                Args:
-                    request (Request): The Django request object.
-
-                Returns:
-                    JsonResponse: The response indicating the status of the operation and any errors.
-                """
         if {'email', 'password'}.issubset(request.data):
             user = authenticate(request, username=request.data['email'], password=request.data['password'])
 

@@ -4,14 +4,17 @@ from django_rest_passwordreset.views import reset_password_request_token, reset_
 from my_app.views import *
 
 app_name = 'backend'
+
 urlpatterns = [
     path('user/register', RegisterAccount.as_view(), name='user-register'),  # Для регистрации пользователя.
     path('user/confirm-email/', ConfirmEmail.as_view(), name='confirm-email'),  # Подтверждения E-mail.
-    path('user/login', LoginAccount.as_view(), name='user-login'),  # Для авторизации пользователей.
-    path('partner/state', PartnerState.as_view(), name='partner-state'),  # Класс для управления состоянием партнера.
-
+    path('user/login/', LoginAccount.as_view(), name='user-login'),  # Для авторизации пользователей.
     # Для удаления аккаунта пользователя.
     path('user/delete/<int:user_id>/', DeleteAccount.as_view(), name='user-delete'),  # Удаление аккаунта.
+    path('user/details', AccountDetails.as_view(), name='user-details'),  # Для управления данными.
+    path('partner/state', PartnerState.as_view(), name='partner-state'),  # Класс для управления состоянием партнера.
+
+
 
     # Встроенные views.
     # Посылает токен сброса пароля на электронный адрес пользователя.
@@ -22,7 +25,7 @@ urlpatterns = [
     path('partner/update', PartnerUpdate.as_view(), name='partner-update'),  # Для обновления прайса от поставщика.
     path('partner/orders', PartnerOrders.as_view(), name='partner-orders'),  # Класс для получения заказов поставщиками.
 
-    path('user/details', AccountDetails.as_view(), name='user-details'),  # Для управления данными.
+
     path('user/contact', ContactView.as_view(), name='user-contact'),  # Для управления контактной информацией.
 
     path('categories', CategoryView.as_view(), name='categories'),  # Класс для просмотра категорий.

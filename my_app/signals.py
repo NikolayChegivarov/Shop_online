@@ -15,7 +15,7 @@ new_order = Signal()  # Уведомляет о создании нового з
 
 
 @receiver(post_save, sender=CustomUser)
-def create_confirm_email_token_and_send_email(sender, instance, created, **kwargs):
+def authorization(sender, instance, created, **kwargs):
     """
     Для авторизации пользователя.
 
