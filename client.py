@@ -28,6 +28,11 @@ login_data = {
 response = requests.post('http://localhost:8000/api/v1/user/login/', data=login_data)
 if response.status_code == 200:
     print("Успешная авторизация")
+    login_response_json = response.json()
+    if 'Token' in login_response_json:
+        print(f"Полученный токен: {login_response_json['Token']}")
+    else:
+        print("Токен не найден в ответе.")
 else:
     print(f"Ошибка авторизации: {response.status_code}")
 # ---------------------------------------------------------------------------------------------------------------------
@@ -40,10 +45,17 @@ else:
 # ---------------------------------------------------------------------------------------------------------------------
 # СОЗДАЕМ МАГАЗИН
 
+
 # ---------------------------------------------------------------------------------------------------------------------
 # ДОБАВЛЯЕМ ПРАЙС
-# response = requests.post('http://localhost:8000/api/v1/partner/update/')
-# Создаем магазин
+# headers = {'Content-Type': 'application/x-yaml'}
+# response = requests.post('http://localhost:8000/api/v1/partner/update/, headers, ')
+#
+# with open('path/to/your/file.yaml', 'r') as file:
+#     yaml_content = file.read()
+# response = requests.post(url, data=yaml_content, headers=headers)
+# print(response.text)
+
 # ---------------------------------------------------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------------------------------------------------

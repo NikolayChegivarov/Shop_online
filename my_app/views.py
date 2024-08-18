@@ -2,7 +2,7 @@
 from ast import literal_eval
 from rest_framework.request import Request
 from rest_framework.response import JsonResponse
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
@@ -103,6 +103,7 @@ class ConfirmEmail(APIView):
 
 
 class LoginAccount(APIView):
+    print('Клас LoginAccount сработал')
     """
     Для входа в систему пользователя.
     Возвращает токен для последующего использования.
@@ -110,20 +111,43 @@ class LoginAccount(APIView):
     Methods:
         POST: Аутентификация пользователя по электронной почте и паролю.
     """
-    # Авторизация методом POST
     def post(self, request, *args, **kwargs):
-        if {'email', 'password'}.issubset(request.data):
-            user = authenticate(request, username=request.data['email'], password=request.data['password'])
+        print('метод post сработал')
+        """
+                Authenticate a user.
 
-            if user is not None:
-                if user.is_active:
-                    token, _ = Token.objects.get_or_create(user=user)
+                Args:
+                    request (Request): The Django request object.
 
-                    return JsonResponse({'Status': True, 'Token': token.key})
+                Returns:
+                    JsonResponse: The response indicating the status of the operation and any errors.
+                """
+        email = request.data.get('email')
+        password = request.data.get('password')
+        print(email, password)
 
-            return JsonResponse({'Status': False, 'Errors': 'Не удалось авторизовать'})
+        if not (email and password):
+            return Response({"error": "Электронная почта или пароль отсутствуют"}, status=400)
+        print('Электронная почта или пароль присутствуют.')
 
-        return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
+        CustomUser = get_user_model()
+
+        if CustomUser.objects.filter(email=email).exists():
+            print('Email существует в бд')
+        else:
+            print('Email не найден в бд')
+            return Response({"error": "Invalid email"}, status=404)
+
+        try:
+            user = CustomUser.objects.get(email=email)
+        except CustomUser.DoesNotExist:
+            print("ОТСУТСТВУЕТ ПОЧТА")
+            return Response({"error": "Invalid credentials"}, status=401)
+
+        # Здесь мы используем check_password для проверки пароля
+        if not user.check_password(password):
+            print("ОТСУТСТВУЕТ ПАРОЛЬ")
+            return Response({"error": "Invalid credentials"}, status=401)
 
 
 class DeleteAccount(GenericAPIView):
