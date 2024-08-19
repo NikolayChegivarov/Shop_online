@@ -34,7 +34,6 @@ def authorization(sender, instance, created, **kwargs):
         print('')
 
         # Создаём ссылку подтверждения.
-        # confirmation_link = f"http://127.0.0.1:8000/api/v1/user/confirm-email/{quote(token.key)}"
         confirmation_link = f"http://127.0.0.1:8000/api/v1/user/confirm-email/?token={quote(token.key)}&email={quote(email)}"
 
         # Отправляем электронное письмо со ссылкой для подтверждения.

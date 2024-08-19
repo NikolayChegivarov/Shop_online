@@ -1,8 +1,11 @@
 # from distutils.util import strtobool
 from ast import literal_eval
+
+from django.shortcuts import render
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import JsonResponse
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
@@ -27,6 +30,9 @@ from my_app.signals import new_user_registered, new_order
 from rest_framework.generics import GenericAPIView
 from django.core.mail import send_mail
 import json
+from django.http import JsonResponse
+from rest_framework.views import APIView
+from django.contrib.auth import get_user_model
 
 
 class RegisterAccount(APIView):
@@ -103,7 +109,6 @@ class ConfirmEmail(APIView):
 
 
 class LoginAccount(APIView):
-    print('Клас LoginAccount сработал')
     """
     Для входа в систему пользователя.
     Возвращает токен для последующего использования.
@@ -112,7 +117,7 @@ class LoginAccount(APIView):
         POST: Аутентификация пользователя по электронной почте и паролю.
     """
     def post(self, request, *args, **kwargs):
-        print('метод post сработал')
+        print('метод post LoginAccount сработал')
         """
                 Authenticate a user.
 
@@ -127,27 +132,62 @@ class LoginAccount(APIView):
         print(email, password)
 
         if not (email and password):
-            return Response({"error": "Электронная почта или пароль отсутствуют"}, status=400)
-        print('Электронная почта или пароль присутствуют.')
+            return Response({"error": "Электронная почта или пароль отсутствуют в запросе."}, status=400)
+        print('Электронная почта и пароль присутствуют в запросе.')
 
         CustomUser = get_user_model()
 
-        if CustomUser.objects.filter(email=email).exists():
-            print('Email существует в бд')
-        else:
-            print('Email не найден в бд')
-            return Response({"error": "Invalid email"}, status=404)
-
+        # Есть ли в колонке email, email текущего пользователя.
         try:
             user = CustomUser.objects.get(email=email)
         except CustomUser.DoesNotExist:
             print("ОТСУТСТВУЕТ ПОЧТА")
             return Response({"error": "Invalid credentials"}, status=401)
+        print(user)
+
+        # Проверяем, активен ли пользователь
+        if not user.is_active:
+            print("ПОЛЬЗОВАТЕЛЬ НЕ АКТИВЕН")
+            return Response({"error": "User is inactive"}, status=403)
+        print('Активность подтверждена')
 
         # Здесь мы используем check_password для проверки пароля
         if not user.check_password(password):
             print("ОТСУТСТВУЕТ ПАРОЛЬ")
             return Response({"error": "Invalid credentials"}, status=401)
+        print("Проверка логин-пароль пройдена")
+
+        # token = ConfirmEmailToken.objects.create(user=user)
+        # token.set_expiry(3600)  # Устанавливаем срок действия токена на 1 час
+        # print('Установлен временный токен на 1 час')
+
+        # Делаем is_authenticated = True
+        login(request, user)
+
+        if request.user.is_authenticated:
+            # Пользователь аутентифицирован
+            print('Пользователь аутентифицирован')
+            return HttpResponse("Вы вошли в систему.")
+        else:
+            # Пользователь не аутентифицирован
+            print('Пользователь не аутентифицирован')
+            return HttpResponse("Пожалуйста, войдите в систему.")
+
+        return Response({"message": "Authentication successful"}, status=200)
+
+
+class CustomUserList(APIView):  # Для теста.
+    """Вывести пользователей в консоль"""
+
+    def get(self, request):
+        print('get list сработал')
+        CustomUser = get_user_model()
+        users = CustomUser.objects.values('id', 'email')  # Получаем список словарей
+
+        for user in users:
+            print(user)  # Выводим каждого пользователя в консоль
+
+        return JsonResponse(list(users), safe=False)
 
 
 class DeleteAccount(GenericAPIView):
@@ -155,12 +195,15 @@ class DeleteAccount(GenericAPIView):
     Для удаления аккаунта пользователя.
 
     Methods:
-    - delite: Удалить аккаунт.
+    - get_object Находит нужный аккаунт.
+    - delite: Удаляет аккаунт.
 
     Attributes:
     - None
     """
     # permission_classes = [IsAuthenticated]
+    # любой пользователь может удалить свои данные из бд сайта.
+
     queryset = CustomUser.objects.all()
 
     def get_object(self, user_id):
@@ -191,6 +234,7 @@ class AccountDetails(APIView):
 
     # получить данные
     def get(self, request: Request, *args, **kwargs):
+        print('AccountDetails get сработала.')
         """
                Получить данные аутентифицированного пользователя.
 
@@ -198,10 +242,13 @@ class AccountDetails(APIView):
                - request (Request): The Django request object.
 
                Returns:
-               - Response: The response containing the details of the authenticated user.
+               - Response: Ответ, содержащий данные аутентифицированного пользователя..
         """
-        if not request.user.is_authenticated:
-            return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
+
+        print(request.user)
+        if not request.user.is_active:
+            return JsonResponse({'Status': False, 'Error': 'Пользователь не активен'}, status=403)
+        print('Пользователь активен')
 
         serializer = UserSerializer(request.user)
         return Response(serializer.data)

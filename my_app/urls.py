@@ -12,9 +12,8 @@ urlpatterns = [
     # Для удаления аккаунта пользователя.
     path('user/delete/<int:user_id>/', DeleteAccount.as_view(), name='user-delete'),  # Удаление аккаунта.
     path('user/details', AccountDetails.as_view(), name='user-details'),  # Для управления данными.
+
     path('partner/state', PartnerState.as_view(), name='partner-state'),  # Класс для управления состоянием партнера.
-
-
 
     # Встроенные views.
     # Посылает токен сброса пароля на электронный адрес пользователя.
@@ -25,7 +24,6 @@ urlpatterns = [
     path('partner/update', PartnerUpdate.as_view(), name='partner-update'),  # Для обновления прайса от поставщика.
     path('partner/orders', PartnerOrders.as_view(), name='partner-orders'),  # Класс для получения заказов поставщиками.
 
-
     path('user/contact', ContactView.as_view(), name='user-contact'),  # Для управления контактной информацией.
 
     path('categories', CategoryView.as_view(), name='categories'),  # Класс для просмотра категорий.
@@ -33,4 +31,6 @@ urlpatterns = [
     path('products', ProductInfoView.as_view(), name='product_search'),  # Класс для поиска товаров.
     path('basket', BasketView.as_view(), name='basket'),  # Для управления корзиной покупок пользователя.
     path('order', OrderView.as_view(), name='order'),  # Для получения и размещения заказов пользователями.
+
+    path('user/list/', CustomUserList.as_view(), name='CustomUserList'),  # Для теста.
 ]

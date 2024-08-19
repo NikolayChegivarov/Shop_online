@@ -17,7 +17,7 @@ print("client")
 #     print("Ошибка при регистрации:", response.status_code, response.text)
 # ---------------------------------------------------------------------------------------------------------------------
 # УДАЛЯЕМ КЛИЕНТА.
-# response = requests.delete('http://localhost:8000/api/v1/user/delete/24/')
+# response = requests.delete('http://localhost:8000/api/v1/user/delete/61/')
 # print(response.status_code)
 # ---------------------------------------------------------------------------------------------------------------------
 # АВТОРИЗУЕМСЯ НА САЙТЕ.
@@ -28,20 +28,14 @@ login_data = {
 response = requests.post('http://localhost:8000/api/v1/user/login/', data=login_data)
 if response.status_code == 200:
     print("Успешная авторизация")
-    login_response_json = response.json()
-    if 'Token' in login_response_json:
-        print(f"Полученный токен: {login_response_json['Token']}")
-    else:
-        print("Токен не найден в ответе.")
 else:
     print(f"Ошибка авторизации: {response.status_code}")
 # ---------------------------------------------------------------------------------------------------------------------
 # details
-# response = requests.get("http://127.0.0.1:8000/api/v1/user/details")
-# if response.status_code == 200:
-#     print("Регистрация прошла успешно:", response.json())
-# else:
-#     print("Ошибка при регистрации:", response.status_code, response.text)
+# headers = {"Authorization": "Token <y9812d54dd2f0ceaf51d5355486296202d439f7c32>",}
+#
+# response = requests.get("http://127.0.0.1:8000/api/v1/user/details", headers=headers)
+# print(response.status_code)
 # ---------------------------------------------------------------------------------------------------------------------
 # СОЗДАЕМ МАГАЗИН
 
@@ -57,7 +51,12 @@ else:
 # print(response.text)
 
 # ---------------------------------------------------------------------------------------------------------------------
-
+# ВЫВЕСТИ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ (для теста)
+# response = requests.get('http://localhost:8000/api/v1/user/list/')
+# if response.status_code == 200:
+#     print("прошла успешно:", response.status_code)
+# else:
+#     print("Ошибка :", response.status_code)
 # ---------------------------------------------------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------------------------------------------------

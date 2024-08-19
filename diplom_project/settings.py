@@ -38,6 +38,14 @@ INSTALLED_APPS = [
 
 ]
 
+# Для TokenAuthentication
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -105,10 +113,10 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-# 'django.core.mail.backends.smtp.EmailBackend'  на почту
-# 'django.core.mail.backends.console.EmailBackend'  выводит в консоль
 
 # Настройка для отправки электронной почты
+# 'django.core.mail.backends.smtp.EmailBackend'  на почту
+# 'django.core.mail.backends.console.EmailBackend'  выводит в консоль
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'smtp.mail.ru'  # Адрес вашего SMTP сервера
 EMAIL_PORT = 465   # Порт SMTP сервера
@@ -117,6 +125,7 @@ EMAIL_USE_SSL = True  # Если вы используете SSL вместо TL
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')  # Ваш адрес электронной почты
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Пароль от вашей почты, рекомендуется хранить в пер. окружения.
 
+AUTH_USER_MODEL = 'my_app.CustomUser'
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/

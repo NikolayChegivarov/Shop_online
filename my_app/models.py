@@ -9,6 +9,8 @@ from django.db.models import Sum
 
 from django.contrib.auth.models import Group, Permission
 
+from datetime import timedelta
+
 
 class VariationUser(models.TextChoices):  # Разновидность пользователя.
     SHOP_REPRESENTATIVE = "SHOP_REPRESENTATIVE", "Представитель магазина"
@@ -114,7 +116,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['email', 'last_name', 'first_name']  # Обязательные поля.
+    REQUIRED_FIELDS = ['last_name', 'first_name']  # Обязательные поля.
 
     def __str__(self):
         return self.email
@@ -310,3 +312,7 @@ class ConfirmEmailToken(models.Model):
 
     def __str__(self):
         return "Токен сброса пароля для пользователя {user}".format(user=self.user)
+
+    def set_expiry(self, seconds):
+        """Для установки срока действия для этого токена."""
+        self.expires = self.created_at + timedelta(seconds=seconds)
