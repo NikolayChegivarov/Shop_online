@@ -3,10 +3,10 @@ print("client")
 
 # РЕГЕСТРИРУЕМ КЛИЕНТА.
 # data = {
-#     'first_name': 'Александр',
-#     'last_name': 'Гусевский',
-#     'email': 'kolyapolosin85@gmail.com',
-#     'password': 'verystrongpassword123',
+#     'first_name': 'Владимир',
+#     'last_name': 'Иноземный',
+#     'email': 'test@gmail.com',
+#     'password': 'verystrongpassword789',
 #     'company': 'Efes',
 #     'position': 'manager'
 # }
@@ -21,21 +21,33 @@ print("client")
 # print(response.status_code)
 # ---------------------------------------------------------------------------------------------------------------------
 # АВТОРИЗУЕМСЯ НА САЙТЕ.
-login_data = {
-    'email': 'kolyapolosin85@gmail.com',
-    'password': 'verystrongpassword123'
-}
-response = requests.post('http://localhost:8000/api/v1/user/login/', data=login_data)
-if response.status_code == 200:
-    print("Успешная авторизация")
-else:
-    print(f"Ошибка авторизации: {response.status_code}")
+# login_data = {
+#     'email': 'test@gmail.com',  # kolyapolosin85@gmail.com
+#     'password': 'verystrongpassword789'  # verystrongpassword123
+# }
+# response = requests.post('http://localhost:8000/api/v1/user/login/', data=login_data)
+# if response.status_code == 200:
+#     print("Успешная авторизация")
+# else:
+#     print(f"Ошибка авторизации: {response.status_code}")
 # ---------------------------------------------------------------------------------------------------------------------
-# details
-# headers = {"Authorization": "Token <y9812d54dd2f0ceaf51d5355486296202d439f7c32>",}
-#
-# response = requests.get("http://127.0.0.1:8000/api/v1/user/details", headers=headers)
+# AccountDetails GET
+# response = requests.get("http://127.0.0.1:8000/api/v1/user/details",
+#                         params={'email': 'kolyapolosin85@gmail.com',
+#                                 'password': 'verystrongpassword123'})
 # print(response.status_code)
+# # ---------------------------------------------------------------------------------------------------------------------
+# # AccountDetails POST
+data_new = {
+    'first_name': 'Александр',
+    'last_name': 'Гусевский',
+    'email': 'kolyapolosin85@gmail.com',
+    'password': 'verystrongpassword123',
+    'company': 'Cola',
+    'position': 'director'
+}
+response = requests.post("http://127.0.0.1:8000/api/v1/user/details", data=data_new)
+print(response.status_code)
 # ---------------------------------------------------------------------------------------------------------------------
 # СОЗДАЕМ МАГАЗИН
 

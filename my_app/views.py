@@ -129,7 +129,6 @@ class LoginAccount(APIView):
                 """
         email = request.data.get('email')
         password = request.data.get('password')
-        print(email, password)
 
         if not (email and password):
             return Response({"error": "Электронная почта или пароль отсутствуют в запросе."}, status=400)
@@ -233,7 +232,7 @@ class AccountDetails(APIView):
     """
 
     # получить данные
-    def get(self, request: Request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         print('AccountDetails get сработала.')
         """
                Получить данные аутентифицированного пользователя.
@@ -245,16 +244,32 @@ class AccountDetails(APIView):
                - Response: Ответ, содержащий данные аутентифицированного пользователя..
         """
 
-        print(request.user)
-        if not request.user.is_active:
-            return JsonResponse({'Status': False, 'Error': 'Пользователь не активен'}, status=403)
-        print('Пользователь активен')
+        # Берем из запроса параметры для авторизации.
+        email = request.query_params.get('email')
+        password = request.query_params.get('password')
+        user = authenticate(request, username=email, password=password)
+        print(user)
+        request.user = user
+
+        # if not user or not user.is_active:
+        #     return JsonResponse({'Status': False, 'Error': 'Authentication failed'}, status=401)
+        # print('Пользователь активен')
+
+        # Проверка на аутентификацию пользователя.
+        if not request.user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Пользователь не аутентифицирован'}, status=401)
+        print(f'Пользователь {user} аутентифицирован')
 
         serializer = UserSerializer(request.user)
+        
+        # Выводим данные в консоль
+        data = serializer.data  # Получаем данные из сериализатора
+        print("User Data:", data)
+
         return Response(serializer.data)
 
-    # Редактирование методом POST
     def post(self, request, *args, **kwargs):
+        print('AccountDetails post сработал')
         """
                 Обновите данные учетной записи аутентифицированного пользователя..
 
@@ -264,26 +279,44 @@ class AccountDetails(APIView):
                 Returns:
                 - JsonResponse: The response indicating the status of the operation and any errors.
                 """
-        if not request.user.is_authenticated:
-            return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
-        # проверяем обязательные аргументы
 
+        # Проверяем, есть ли в запросе данные об электронной почте
+        if 'email' not in request.POST:
+            return JsonResponse({'Status': False, 'Error': 'Email is required'}, status=400)
+
+        # Получаем адрес электронной почты из данных POST запроса
+        email = request.POST['email']
+
+        # Ищем пользователя по электронной почте
+        try:
+            user = CustomUser.objects.get(email=email)
+        except CustomUser.DoesNotExist:
+            return JsonResponse({'Status': False, 'Error': 'User does not exist'}, status=404)
+
+        # Проверяем, аутентифицирован ли пользователь
+        if not user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
+
+        print(f'Пользователь {email} аутентифицирован')
+
+        # проверяем обязательные аргументы
         if 'password' in request.data:
+            print('Пароль есть')
             errors = {}
             # проверяем пароль на сложность
             try:
                 validate_password(request.data['password'])
+                print('Пароль норм.')
             except Exception as password_error:
                 error_array = []
-                # noinspection PyTypeChecker
                 for item in password_error:
                     error_array.append(item)
                 return JsonResponse({'Status': False, 'Errors': {'password': error_array}})
             else:
-                request.user.set_password(request.data['password'])
+                pass  # request.user.set_password(request.data['password'])
 
         # проверяем остальные данные
-        user_serializer = UserSerializer(request.user, data=request.data, partial=True)
+        user_serializer = UserSerializer(user, data=request.data, partial=True)
         if user_serializer.is_valid():
             user_serializer.save()
             return JsonResponse({'Status': True})
