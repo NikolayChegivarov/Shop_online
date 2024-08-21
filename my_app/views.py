@@ -292,6 +292,7 @@ class AccountDetails(APIView):
                 return JsonResponse({'Status': False, 'Errors': {'password': error_array}})
         user_serializer = UserSerializer(user, data=request.data, partial=True)
         if user_serializer.is_valid():
+            user.shop_id = request.data.get('shop_id', None)
             user_serializer.save()
             return JsonResponse({'Status': True})
         else:
@@ -320,17 +321,31 @@ class ShopCreate(APIView):
 
             Methods:
             POST: Создание магазина.
-
-            Args:
-            - request (Request): The Django request object.
-
-            Returns:
-            - JsonResponse: The response indicating the status of the operation and any errors.
             """
     def post(self, request, *args, **kwargs):
-
         print('ShopCreate post сработала')
         print(request.data)
+
+        if 'email' not in request.data:
+            return JsonResponse({'Status': False, 'Error': 'Email is required'}, status=400)
+        email = request.data['email']
+        try:
+            user = CustomUser.objects.get(email=email)
+        except ObjectDoesNotExist:
+            return JsonResponse({'Status': False, 'Error': 'User does not exist'}, status=404)
+        if not user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
+        if 'password' in request.data:
+            print('Пароль есть')
+            errors = {}
+            try:
+                validate_password(request.data['password'])
+                print('Пароль норм.')
+            except Exception as password_error:
+                error_array = []
+                for item in password_error:
+                    error_array.append(str(item))
+                return JsonResponse({'Status': False, 'Errors': {'password': error_array}})
 
         # Assuming you want to create a shop based on the request data
         serializer = ShopSerializer(data=request.data)  # Use the correct serializer for shops

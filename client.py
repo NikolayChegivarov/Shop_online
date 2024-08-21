@@ -40,19 +40,19 @@ print("client")
 # print(response.status_code)
 # ---------------------------------------------------------------------------------------------------------------------
 # AccountDetails POST
-data_new = {
-    'first_name': 'Александр',
-    'last_name': 'Гусевский',
-    'email': 'kolyapolosin85@gmail.com',
-    'password': 'verystrongpassword123',
-    'company': 'Cola',
-    'position': 'director',
-    'VariationUser': 'SHOP_REPRESENTATIVE',
-    'shop_id': '5'
-}
-headers = {'Content-Type': 'application/json'}
-response = requests.post("http://127.0.0.1:8000/api/v1/user/details", json=data_new, headers=headers)
-print(response.status_code)
+# data_new = {
+#     'first_name': 'Александр',
+#     'last_name': 'Гусевский',
+#     'email': 'kolyapolosin85@gmail.com',
+#     'password': 'verystrongpassword123',
+#     'company': 'Cola',
+#     'position': 'director',
+#     'VariationUser': 'SHOP_REPRESENTATIVE',
+#     'shop_id': '5'
+# }
+# headers = {'Content-Type': 'application/json'}
+# response = requests.post("http://127.0.0.1:8000/api/v1/user/details", json=data_new, headers=headers)
+# print(response.status_code)
 # ---------------------------------------------------------------------------------------------------------------------
 # Просмотр магазинов.
 # response = requests.get("http://127.0.0.1:8000/api/v1/shops")
@@ -60,12 +60,15 @@ print(response.status_code)
 # ---------------------------------------------------------------------------------------------------------------------
 # СОЗДАЕМ МАГАЗИН
 # data = {
-#     'name': 'Coca-Cola',
-#     'url': 'http://127.0.0.1:8000/Coca-Cola',
+#     'name': 'Efes',
+#     'url': 'http://127.0.0.1:8000/Efes',
 #     'user': '61',
-#     'state': 'True'
+#     'state': 'True',
+#     'email': 'kolyapolosin85@gmail.com',
+#     'password': 'verystrongpassword123',
 # }
-# response = requests.post("http://127.0.0.1:8000/api/v1/shop/create", data=data)
+# headers = {'Content-Type': 'application/json'}
+# response = requests.post("http://127.0.0.1:8000/api/v1/shop/create", json=data, headers=headers)
 # print(response.status_code)
 # print(response.text)
 # ---------------------------------------------------------------------------------------------------------------------
@@ -84,8 +87,7 @@ print(response.status_code)
 # else:
 #     print("Ошибка :", response.status_code)
 # ---------------------------------------------------------------------------------------------------------------------
-# ДАЕМ МАГАЗИНУ СТАТУС True False.
-# response = requests.post("http://127.0.0.1:8000/api/v1/user/state")
+
 # ---------------------------------------------------------------------------------------------------------------------
 
 # ДОБАВЛЯЕМ ПРАЙС
