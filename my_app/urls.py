@@ -33,5 +33,4 @@ urlpatterns = [
     path('order', OrderView.as_view(), name='order'),  # Для получения и размещения заказов пользователями.
 
     # path('user/list/', CustomUserList.as_view(), name='custom_userList'),  # Для теста.
-
 ]

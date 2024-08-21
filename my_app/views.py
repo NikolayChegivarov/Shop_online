@@ -36,6 +36,7 @@ from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 
 from rest_framework import status
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class RegisterAccount(APIView):
@@ -269,50 +270,26 @@ class AccountDetails(APIView):
 
     def post(self, request, *args, **kwargs):
         print('AccountDetails post сработал')
-        """
-                Обновите данные учетной записи аутентифицированного пользователя..
-
-                Args:
-                - request (Request): The Django request object.
-
-                Returns:
-                - JsonResponse: The response indicating the status of the operation and any errors.
-                """
-
-        # Проверяем, есть ли в запросе данные об электронной почте
-        if 'email' not in request.POST:
+        if 'email' not in request.data:
             return JsonResponse({'Status': False, 'Error': 'Email is required'}, status=400)
-
-        # Получаем адрес электронной почты из данных POST запроса
-        email = request.POST['email']
-
-        # Ищем пользователя по электронной почте
+        email = request.data['email']
         try:
             user = CustomUser.objects.get(email=email)
-        except CustomUser.DoesNotExist:
+        except ObjectDoesNotExist:
             return JsonResponse({'Status': False, 'Error': 'User does not exist'}, status=404)
-
-        # Проверяем, аутентифицирован ли пользователь
         if not user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
-
-        print(f'Пользователь {email} аутентифицирован')
-
-        # проверяем обязательные аргументы
         if 'password' in request.data:
             print('Пароль есть')
             errors = {}
-            # проверяем пароль на сложность
             try:
                 validate_password(request.data['password'])
                 print('Пароль норм.')
             except Exception as password_error:
                 error_array = []
                 for item in password_error:
-                    error_array.append(item)
+                    error_array.append(str(item))
                 return JsonResponse({'Status': False, 'Errors': {'password': error_array}})
-
-        # проверяем остальные данные
         user_serializer = UserSerializer(user, data=request.data, partial=True)
         if user_serializer.is_valid():
             user_serializer.save()

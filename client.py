@@ -38,8 +38,8 @@ print("client")
 #                         params={'email': 'kolyapolosin85@gmail.com',
 #                                 'password': 'verystrongpassword123'})
 # print(response.status_code)
-# # ---------------------------------------------------------------------------------------------------------------------
-# # AccountDetails POST
+# ---------------------------------------------------------------------------------------------------------------------
+# AccountDetails POST
 data_new = {
     'first_name': 'Александр',
     'last_name': 'Гусевский',
@@ -50,7 +50,8 @@ data_new = {
     'VariationUser': 'SHOP_REPRESENTATIVE',
     'shop_id': '5'
 }
-response = requests.post("http://127.0.0.1:8000/api/v1/user/details", data=data_new)
+headers = {'Content-Type': 'application/json'}
+response = requests.post("http://127.0.0.1:8000/api/v1/user/details", json=data_new, headers=headers)
 print(response.status_code)
 # ---------------------------------------------------------------------------------------------------------------------
 # Просмотр магазинов.

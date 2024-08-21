@@ -32,14 +32,14 @@ class UserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = (
             'id',
-            # 'VariationUser'
+            'VariationUser',
             'first_name',
             'last_name',
             'email',
             'company',
             'position',
             'contacts',
-            # 'shop_id'
+            'shop_id'
         )
         read_only_fields = ('id',)
 
