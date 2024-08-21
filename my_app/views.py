@@ -5,6 +5,7 @@ from django.shortcuts import render
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import JsonResponse
+from rest_framework.response import Response
 from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -22,10 +23,10 @@ from ujson import loads as load_json
 from urllib.parse import quote
 from yaml import load as load_yaml, Loader
 
-from my_app.models import Shop, CustomUser, Category, Product, ProductInfo, Parameter, ProductParameter, Order, OrderItem, \
-    Contact, ConfirmEmailToken
-from my_app.serializers import UserSerializer, CategorySerializer, ShopSerializer, ProductInfoSerializer, \
-    OrderItemSerializer, OrderSerializer, ContactSerializer
+from my_app.models import (Shop, CustomUser, Category, Product, ProductInfo, Parameter, ProductParameter, Order,
+                           OrderItem, Contact, ConfirmEmailToken)
+from my_app.serializers import (UserSerializer, CategorySerializer, ShopSerializer, ProductInfoSerializer,
+                                OrderItemSerializer, OrderSerializer, ContactSerializer)
 from my_app.signals import new_user_registered, new_order
 from rest_framework.generics import GenericAPIView
 from django.core.mail import send_mail
@@ -33,6 +34,8 @@ import json
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
+
+from rest_framework import status
 
 
 class RegisterAccount(APIView):
@@ -225,7 +228,7 @@ class AccountDetails(APIView):
 
     Methods:
     - get: Получить данные аутентифицированного пользователя.
-    - post: Обновите данные учетной записи аутентифицированного пользователя..
+    - post: Обновите данные учетной записи аутентифицированного пользователя...
 
     Attributes:
     - None
@@ -250,10 +253,6 @@ class AccountDetails(APIView):
         user = authenticate(request, username=email, password=password)
         print(user)
         request.user = user
-
-        # if not user or not user.is_active:
-        #     return JsonResponse({'Status': False, 'Error': 'Authentication failed'}, status=401)
-        # print('Пользователь активен')
 
         # Проверка на аутентификацию пользователя.
         if not request.user.is_authenticated:
@@ -312,8 +311,6 @@ class AccountDetails(APIView):
                 for item in password_error:
                     error_array.append(item)
                 return JsonResponse({'Status': False, 'Errors': {'password': error_array}})
-            else:
-                pass  # request.user.set_password(request.data['password'])
 
         # проверяем остальные данные
         user_serializer = UserSerializer(user, data=request.data, partial=True)
@@ -338,6 +335,33 @@ class ShopView(ListAPIView):
     """
     queryset = Shop.objects.filter(state=True)
     serializer_class = ShopSerializer
+
+
+class ShopCreate(APIView):
+    """
+            Создайте новый магазин...
+
+            Methods:
+            POST: Создание магазина.
+
+            Args:
+            - request (Request): The Django request object.
+
+            Returns:
+            - JsonResponse: The response indicating the status of the operation and any errors.
+            """
+    def post(self, request, *args, **kwargs):
+
+        print('ShopCreate post сработала')
+        print(request.data)
+
+        # Assuming you want to create a shop based on the request data
+        serializer = ShopSerializer(data=request.data)  # Use the correct serializer for shops
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductInfoView(APIView):
@@ -371,7 +395,7 @@ class ProductInfoView(APIView):
         if category_id:
             query = query & Q(product__category_id=category_id)
 
-        # фильтруем и отбрасываем дуликаты
+        # фильтруем и отбрасываем дубликаты.
         queryset = ProductInfo.objects.filter(
             query).select_related(
             'shop', 'product__category').prefetch_related(
@@ -521,7 +545,7 @@ class BasketView(APIView):
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
 
 
-class PartnerUpdate(APIView):
+class PriceUpdate(APIView):
     """
     Класс для обновления прайса от поставщика.
 
@@ -590,7 +614,7 @@ class PartnerUpdate(APIView):
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
 
 
-class PartnerState(APIView):
+class ShopState(APIView):
     """
        Класс для управления состоянием партнера.
 
@@ -600,8 +624,10 @@ class PartnerState(APIView):
        Attributes:
        - None
        """
-    # получить текущий статус
+
+    # Получить текущий статус магазина.
     def get(self, request, *args, **kwargs):
+        print('PartnerState get')
         """
                Retrieve the state of the partner.
 
@@ -621,7 +647,7 @@ class PartnerState(APIView):
         serializer = ShopSerializer(shop)
         return Response(serializer.data)
 
-    # изменить текущий статус
+    # Изменить текущий статус магазина.
     def post(self, request, *args, **kwargs):
         """
                Обновить статус партнера.

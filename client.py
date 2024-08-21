@@ -1,4 +1,5 @@
 import requests
+import json
 print("client")
 
 # РЕГЕСТРИРУЕМ КЛИЕНТА.
@@ -9,6 +10,7 @@ print("client")
 #     'password': 'verystrongpassword789',
 #     'company': 'Efes',
 #     'position': 'manager'
+
 # }
 # response = requests.post("http://127.0.0.1:8000/api/v1/user/register", data=data)
 # if response.status_code == 200:
@@ -44,15 +46,47 @@ data_new = {
     'email': 'kolyapolosin85@gmail.com',
     'password': 'verystrongpassword123',
     'company': 'Cola',
-    'position': 'director'
+    'position': 'director',
+    'VariationUser': 'SHOP_REPRESENTATIVE',
+    'shop_id': '5'
 }
 response = requests.post("http://127.0.0.1:8000/api/v1/user/details", data=data_new)
 print(response.status_code)
 # ---------------------------------------------------------------------------------------------------------------------
-# СОЗДАЕМ МАГАЗИН
-
-
+# Просмотр магазинов.
+# response = requests.get("http://127.0.0.1:8000/api/v1/shops")
+# print(response.status_code)
 # ---------------------------------------------------------------------------------------------------------------------
+# СОЗДАЕМ МАГАЗИН
+# data = {
+#     'name': 'Coca-Cola',
+#     'url': 'http://127.0.0.1:8000/Coca-Cola',
+#     'user': '61',
+#     'state': 'True'
+# }
+# response = requests.post("http://127.0.0.1:8000/api/v1/shop/create", data=data)
+# print(response.status_code)
+# print(response.text)
+# ---------------------------------------------------------------------------------------------------------------------
+# ПОЛУЧАЕМ ИНФУ О МАГАЗИНЕ
+# login_data = {
+#     'email': 'test@gmail.com',  # kolyapolosin85@gmail.com
+#     'password': 'verystrongpassword789'  # verystrongpassword123
+# }
+# response = requests.get("http://127.0.0.1:8000/api/v1/user/state")
+# print(response.status_code)
+# ---------------------------------------------------------------------------------------------------------------------
+# ВЫВЕСТИ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ (для теста)
+# response = requests.get('http://localhost:8000/api/v1/user/list/')
+# if response.status_code == 200:
+#     print("прошла успешно:", response.status_code)
+# else:
+#     print("Ошибка :", response.status_code)
+# ---------------------------------------------------------------------------------------------------------------------
+# ДАЕМ МАГАЗИНУ СТАТУС True False.
+# response = requests.post("http://127.0.0.1:8000/api/v1/user/state")
+# ---------------------------------------------------------------------------------------------------------------------
+
 # ДОБАВЛЯЕМ ПРАЙС
 # headers = {'Content-Type': 'application/x-yaml'}
 # response = requests.post('http://localhost:8000/api/v1/partner/update/, headers, ')

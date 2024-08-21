@@ -35,7 +35,7 @@ class Shop(models.Model):
     url = models.URLField(verbose_name='Ссылка', null=True, blank=True)
     user = models.OneToOneField('CustomUser', verbose_name='Пользователь',
                                 blank=True, null=True,
-                                on_delete=models.CASCADE, related_name='owned_shop')  # Add related_name here
+                                on_delete=models.CASCADE, related_name='owned_shop')
     state = models.BooleanField(verbose_name='Статус', default=True)
     date_joined = models.DateTimeField(verbose_name='Дата регистрации', auto_now_add=True)
 

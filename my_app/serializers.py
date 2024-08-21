@@ -32,12 +32,14 @@ class UserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = (
             'id',
+            # 'VariationUser'
             'first_name',
             'last_name',
             'email',
             'company',
             'position',
             'contacts',
+            # 'shop_id'
         )
         read_only_fields = ('id',)
 
@@ -88,10 +90,11 @@ class CategorySerializer(serializers.ModelSerializer):
 class ShopSerializer(serializers.ModelSerializer):
     state = serializers.BooleanField()
 
+    user = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
+
     class Meta:
-        """ShopSerializer Meta."""
         model = Shop
-        fields = ('id', 'name', 'state',)
+        fields = ('id', 'name', 'url', 'state', 'user')
         read_only_fields = ('id',)
 
 
