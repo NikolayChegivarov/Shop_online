@@ -580,13 +580,12 @@ class PriceUpdate(APIView):
             return JsonResponse({'Status': False, 'Error': 'Только для магазинов'}, status=403)
         print('пользователь-магазин')
 
-        # CustomUser = get_user_model()
-
         print(request.user.id)
 
-        shop = Shop.objects.get(user_id=user.id)
-
+        shop = Shop.objects.get(user_id=request.user.id)
         print(shop)
+        shop_url = shop.url
+        print(shop_url)
 
         # Является ли предоставленный URL действительным.
         url = request.data.get('url')

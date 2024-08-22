@@ -31,4 +31,9 @@ True, после чего удаляет токен.
 
 Для отправки писем вместо консоли на электронную почту, в settings.py поменяйте 'console' на 'smtp'.
 
+        shop = Shop.objects.get(user_id=request.user.id)
+        print(shop)
 
+        # Является ли предоставленный URL действительным.
+        url = shop.url
+        print(url)
