@@ -14,6 +14,7 @@ urlpatterns = [
 
     path('shop/create', ShopCreate.as_view(), name='shop_create'),  # Создание магазина.
     path('shop/state', ShopState.as_view(), name='shop-state'),  # Класс изменения статуса магазина.
+    path('price/update', PriceUpdate.as_view(), name='partner-update'),  # Для обновления прайса от поставщика.
 
     # Встроенные views.
     # Посылает токен сброса пароля на электронный адрес пользователя.
@@ -21,7 +22,7 @@ urlpatterns = [
     # Проверяет действительность токена и, если все в порядке, обновляет пароль пользователя в системе.
     path('user/password_reset/confirm', reset_password_confirm, name='password-reset-confirm'),
 
-    path('price/update', PriceUpdate.as_view(), name='partner-update'),  # Для обновления прайса от поставщика.
+
     path('partner/orders', PartnerOrders.as_view(), name='partner-orders'),  # Класс для получения заказов поставщиками.
 
     path('user/contact', ContactView.as_view(), name='user-contact'),  # Для управления контактной информацией.

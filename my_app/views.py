@@ -38,6 +38,8 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 from django.core.exceptions import ObjectDoesNotExist
 
+from yaml import load, Loader
+
 
 class RegisterAccount(APIView):
     """
@@ -558,17 +560,39 @@ class PriceUpdate(APIView):
                 Returns:
                 - JsonResponse: The response indicating the status of the operation and any errors.
                 """
+        print('PriceUpdate post сработал.')
+
+        # Берем из запроса параметры для авторизации.
+        email = request.data.get('email')
+        password = request.data.get('password')
+        print(f'логин: {email}, пароль: {password}')
+        user = authenticate(request, username=email, password=password)
+        print(f'юзер: {user}')
+        request.user = user
+
         # Проверка пользователя на аутентификацию.
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
+        print('Пользователь аутентифицирован.')
 
         # Проверка на тип пользователя, магазин или нет.
-        if request.user.type != 'shop':
+        if request.user.VariationUser != 'SHOP_REPRESENTATIVE':
             return JsonResponse({'Status': False, 'Error': 'Только для магазинов'}, status=403)
+        print('пользователь-магазин')
+
+        # CustomUser = get_user_model()
+
+        print(request.user.id)
+
+        shop = Shop.objects.get(user_id=user.id)
+
+        print(shop)
 
         # Является ли предоставленный URL действительным.
         url = request.data.get('url')
+        print(f'url: {url}')
         if url:
+            # Создание экземпляра класса для валидации URL
             validate_url = URLValidator()
             try:
                 validate_url(url)
@@ -601,6 +625,7 @@ class PriceUpdate(APIView):
                                                         parameter_id=parameter_object.id,
                                                         value=value)
 
+                print('Загрузка успешна.')
                 return JsonResponse({'Status': True})
 
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})

@@ -1,5 +1,6 @@
 import requests
 import json
+import yaml
 print("client")
 
 # РЕГЕСТРИРУЕМ КЛИЕНТА.
@@ -60,8 +61,8 @@ print("client")
 # ---------------------------------------------------------------------------------------------------------------------
 # СОЗДАЕМ МАГАЗИН
 # data = {
-#     'name': 'Efes',
-#     'url': 'http://127.0.0.1:8000/Efes',
+#     'name': 'Coca-Cola',
+#     'url': 'http://127.0.0.1:8000/Coca-Cola',
 #     'user': '61',
 #     'state': 'True',
 #     'email': 'kolyapolosin85@gmail.com',
@@ -91,14 +92,47 @@ print("client")
 # ---------------------------------------------------------------------------------------------------------------------
 
 # ДОБАВЛЯЕМ ПРАЙС
-# headers = {'Content-Type': 'application/x-yaml'}
-# response = requests.post('http://localhost:8000/api/v1/partner/update/, headers, ')
-#
-# with open('path/to/your/file.yaml', 'r') as file:
-#     yaml_content = file.read()
-# response = requests.post(url, data=yaml_content, headers=headers)
-# print(response.text)
+with open('shop1.yaml', 'r') as file:
+    yaml_content = yaml.safe_load(file)
+request_body = {}
+if yaml_content is None:
+    print("YAML file is empty or invalid.")
+else:
+    # Преобразование содержимого YAML в JSON
+    yaml_data_json = json.dumps(yaml_content, ensure_ascii=False)
+    print(yaml_data_json)
+    # Дополнительные данные для проверки прав пользователя
+    additional_data = {
+        'id': '61',
+        'first_name': 'Александр',
+        'last_name': 'Гусевский',
+        'email': 'kolyapolosin85@gmail.com',
+        'password': 'verystrongpassword123',
+        'company': 'Cola',
+        'position': 'director',
+        'VariationUser': 'SHOP_REPRESENTATIVE',
+        'shop_id': '5',
+    }
 
+    # Объединение данных в одно тело запроса
+    request_body = {
+        'data': yaml_data_json,
+        **additional_data
+    }
+
+    response = requests.post(
+        'http://localhost:8000/api/v1/price/update',
+        json=request_body,
+        headers={'Content-Type': 'application/json'})
+
+    if response.status_code == 200:
+        print("Data successfully loaded")
+    else:
+        try:
+            print(f"Error loading data: {response.json()}")
+        except requests.exceptions.JSONDecodeError:
+            print("Сервер ответил пустым телом или неверным JSON..")
+# ----------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------
 # ВЫВЕСТИ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ (для теста)
 # response = requests.get('http://localhost:8000/api/v1/user/list/')
