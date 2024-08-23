@@ -27,13 +27,7 @@ True, после чего удаляет токен.
 
 Входим на сайт с помощью LoginAccount
 
-
-
 Для отправки писем вместо консоли на электронную почту, в settings.py поменяйте 'console' на 'smtp'.
 
-        shop = Shop.objects.get(user_id=request.user.id)
-        print(shop)
-
-        # Является ли предоставленный URL действительным.
-        url = shop.url
-        print(url)
+pip install celery
+pip install redis

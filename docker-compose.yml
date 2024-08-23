@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  redis:
+    image: redis:7.2.4-alpine
+
+  django:
+    container_name: django
+    build:
+      context: ./back
+    ports:
+      - 8000:8000
+    volumes:
+      - ./back:/app
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - redis
+
+  celery:
+    container_name: celery
+    build:
+      context: ./back
+    command: celery -A config worKer -l INFO
+    volumes:
+      - ./back:/app
+    depends_on:
+      - django

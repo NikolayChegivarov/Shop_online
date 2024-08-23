@@ -33,5 +33,5 @@ urlpatterns = [
     path('basket', BasketView.as_view(), name='basket'),  # Для управления корзиной покупок пользователя.
 
     path('partner/orders', PartnerOrders.as_view(), name='partner-orders'),  # Класс для получения заказов поставщиками.
-    # path('user/list/', CustomUserList.as_view(), name='custom_userList'),  # Для теста.
+    path('user/list/', CustomUserList.as_view(), name='custom_userList'),  # Для теста.
 ]

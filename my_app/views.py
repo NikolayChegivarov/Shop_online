@@ -614,7 +614,7 @@ class ProductInfoView(APIView):
 
     def get(self, request: Request, *args, **kwargs):
         """
-               Retrieve the product information based on the specified filters.
+               Получить информацию о продукте на основе указанных фильтров..
 
                Args:
                - request (Request): The Django request object.
