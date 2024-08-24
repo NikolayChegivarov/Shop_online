@@ -20,7 +20,7 @@ services:
     container_name: celery
     build:
       context: ./back
-    command: celery -A config worKer -l INFO
+    command: celery -A diplom_project worKer -l INFO
     volumes:
       - ./back:/app
     depends_on:

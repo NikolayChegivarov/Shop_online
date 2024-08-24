@@ -8,7 +8,6 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -125,6 +124,12 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')  # Ваш адрес электр
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Пароль от вашей почты, рекомендуется хранить в пер. окружения.
 
 AUTH_USER_MODEL = 'my_app.CustomUser'
+
+# Настройки celery
+CELERY_TIMEZONE = 'Europe/Moscow'
+
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER', 'redis://redis:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_BROKER', 'redis://redis:6379/0')
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/

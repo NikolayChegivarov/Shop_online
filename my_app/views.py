@@ -648,7 +648,11 @@ class ShopView(ListAPIView):
     Класс для просмотра списка магазинов
     """
     queryset = Shop.objects.filter(state=True)
-    serializer_class = ShopSerializer
+
+    def get(self, request, *args, **kwargs):
+        # Логика получения данных
+        serializer = self.get_serializer(self.queryset)
+        return Response(serializer.data)
 
 
 class CategoryView(ListAPIView):
