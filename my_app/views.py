@@ -650,7 +650,6 @@ class ShopView(ListAPIView):
     queryset = Shop.objects.filter(state=True)
 
     def get(self, request, *args, **kwargs):
-        # Логика получения данных
         serializer = self.get_serializer(self.queryset)
         return Response(serializer.data)
 
