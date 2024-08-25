@@ -316,7 +316,3 @@ class ConfirmEmailToken(models.Model):
     def set_expiry(self, seconds):
         """Для установки срока действия для этого токена."""
         self.expires = self.created_at + timedelta(seconds=seconds)
-
-
-class PasswordResetToken:
-    pass
