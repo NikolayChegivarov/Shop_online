@@ -87,6 +87,7 @@ class RegisterAccount(APIView):
 class ConfirmEmail(APIView):
     """
     APIView для подтверждения электронной почты пользователя.
+    Срабатывает от сигнала.
     При успешном подтверждении аккаунт активируется.
 
     Methods:
@@ -94,7 +95,6 @@ class ConfirmEmail(APIView):
     """
     def get(self, request, *args, **kwargs):
         print(f' request {request.data}')
-        # Используем request.query_params для получения параметров запроса
         email = request.query_params.get('email')
         token = request.query_params.get('token')
 
@@ -416,22 +416,22 @@ class ContactView(APIView):
 
 class ShopCreate(APIView):
     """
-            Создайте новый магазин...
+    Для регистрации нового магазина.
 
-            Methods:
-            POST: Создание магазина.
-            """
+    Methods:
+    POST: Создание магазина.
+    """
     def post(self, request, *args, **kwargs):
         print('ShopCreate post сработала')
         print(request.data)
 
         if 'email' not in request.data:
-            return JsonResponse({'Status': False, 'Error': 'Email is required'}, status=400)
+            return JsonResponse({'Status': False, 'Error': 'Требуется Email'}, status=400)
         email = request.data['email']
         try:
             user = CustomUser.objects.get(email=email)
         except ObjectDoesNotExist:
-            return JsonResponse({'Status': False, 'Error': 'User does not exist'}, status=404)
+            return JsonResponse({'Status': False, 'Error': 'Пользователь не существует'}, status=404)
         if not user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
         if 'password' in request.data:
@@ -445,9 +445,7 @@ class ShopCreate(APIView):
                 for item in password_error:
                     error_array.append(str(item))
                 return JsonResponse({'Status': False, 'Errors': {'password': error_array}})
-
-        # Assuming you want to create a shop based on the request data
-        serializer = ShopSerializer(data=request.data)  # Use the correct serializer for shops
+        serializer = ShopSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
