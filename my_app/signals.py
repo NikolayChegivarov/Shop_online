@@ -1,5 +1,3 @@
-from typing import Type
-
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.db.models.signals import post_save
@@ -10,8 +8,13 @@ from django.core.mail import send_mail
 from django.contrib.auth import get_user_model
 from urllib.parse import quote
 
+User = get_user_model()
+
 new_user_registered = Signal()  # Уведомляет о создании нового пользователя.
 new_order = Signal()  # Уведомляет о создании нового заказа.
+
+pre_password_reset = Signal()  # providing_args=["user", "reset_password_token"]
+post_password_reset = Signal()  # providing_args=["user", "reset_password_token"]
 
 
 @receiver(post_save, sender=CustomUser)
@@ -23,6 +26,7 @@ def authorization(sender, instance, created, **kwargs):
     :param instance: Экземпляр класса CustomUser.
     :param created: Булево значение, указывающее, был ли объект только что создан (True).
     :param kwargs: Дополнительные аргументы, которые могут быть переданы вместе с сигналом.
+    :return: None
     """
 
     if created:
@@ -48,6 +52,10 @@ def authorization(sender, instance, created, **kwargs):
 def new_order_signal(user_id, **kwargs):
     """
     Отправляем письмо при изменении статуса заказа.
+
+    :param user_id: ID пользователя
+    :param kwargs: Дополнительные параметры
+    :return: None
     """
     # send an e-mail to the user
     user = CustomUser.objects.get(id=user_id)
@@ -63,4 +71,30 @@ def new_order_signal(user_id, **kwargs):
         [user.email]
     )
     msg.send()
-    
+
+
+@receiver(pre_password_reset)
+def handle_pre_password_reset(sender, **kwargs):
+    """
+    Обработка события предсброса пароля пользователя.
+
+    :param sender: Объект, отправляющий сигнал
+    :param kwargs: Словарь дополнительных аргументов
+    :param kwargs['user']: Модель пользователя, для которого запущен процесс сброса пароля
+    :return: None
+    """
+    user = kwargs['user']
+    print(f"Процесс сброса пароля запущен для пользователя: {user}")
+
+@receiver(post_password_reset)
+def handle_post_password_reset(sender, **kwargs):
+    """
+    Обработка события после сброса пароля пользователя.
+
+    :param sender: Объект, отправляющий сигнал (обычно модель User)
+    :param kwargs: Словарь дополнительных аргументов
+    :param kwargs['user']: Модель пользователя, для которого был успешно сброшен пароль
+    :return: None
+    """
+    user = kwargs['user']
+    print(f"Процесс сброса пароля для пользователя завершен: {user}")
