@@ -1,27 +1,28 @@
-version: '3.9'
 
-services:
-  redis:
-    image: redis:7.2.4-alpine
+services:  # Определение сервисов
+  redis:  # Настройки сервиса Redis
+    image: redis:7.2.4-alpine  # Используемый образ
 
-  django:
-    container_name: django
+  django:  # Настройки сервиса Django
+    container_name: django  # Имя контейнера
     build:
-      context: ./back
-    ports:
+      context: .  # Путь в директорию, из которой Dockerfile будет собран для создания контейнера Django.
+    ports:  # Применение порта 8000 из контейнера на хосте
       - 8000:8000
     volumes:
-      - ./back:/app
-    command: python manage.py runserver 0.0.0.0:8000
+      - ./back:/app  # Монтирование локального каталога проекта в контейнер
+    command: python manage.py runserver 0.0.0.0:8000  # Команда запуска сервера Django
     depends_on:
-      - redis
+      - redis  # Зависимость от сервиса Redis
+    env_file:
+      - ./.env
 
-  celery:
-    container_name: celery
+  celery:  # Настройки сервиса Celery
+    container_name: celery  # Имя контейнера
     build:
-      context: ./back
-    command: celery -A diplom_project worKer -l INFO
+      context: .  # Путь к celery.py
+    command: celery -A diplom_project worKer -l INFO  # Команда запуска Celery с логированием на уровне INFO
     volumes:
-      - ./back:/app
+      - ./back:/app  # Монтирование локального каталога проекта в контейнер
     depends_on:
-      - django
+      - django  # Зависимость от сервиса Django
