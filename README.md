@@ -1,3 +1,4 @@
+ЗДЕСЬ ТОЛЬКО МОИ ЗАМЕТКИ
 
 pip install django
 

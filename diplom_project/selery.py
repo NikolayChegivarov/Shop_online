@@ -1,7 +1,6 @@
 import os
 from celery import Celery
 
-# Установите модуль настроек Django по умолчанию для программы «сельдерей»...
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'diplom_project.settings')
 
 # Создаем экземпляр.

@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'diplom_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'diplom',
+        'NAME': os.getenv('NAME_DB'),
         'HOST': 'localhost',
         'PORT': '5432',
         'USER': 'postgres',

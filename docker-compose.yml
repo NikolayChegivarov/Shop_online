@@ -1,4 +1,5 @@
 
+
 services:  # Определение сервисов
   redis:  # Настройки сервиса Redis
     image: redis:7.2.4-alpine  # Используемый образ
@@ -26,3 +27,16 @@ services:  # Определение сервисов
       - ./back:/app  # Монтирование локального каталога проекта в контейнер
     depends_on:
       - django  # Зависимость от сервиса Django
+
+  postgres: # Настройки сервиса PostgreSQL
+    container_name: django  # Имя контейнера
+#    image: postgres:latest  # Используемый образ PostgreSQL
+    environment: # Переменные окружения для конфигурации базы данных
+      POSTGRES_DB: ${POSTGRES_DB:-os.getenv('NAME_DB')}  # Имя вашей базы данных
+      POSTGRES_USER: postgres  # Имя пользователя базы данных
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-os.getenv('PASSWORD_DB')}  # Пароль пользователя базы данных
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Монтирование тома для данных базы данных
+
+  volumes:
+    postgres_data:  # Определение тома для данных PostgreSQL
