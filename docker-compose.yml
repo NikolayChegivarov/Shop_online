@@ -15,7 +15,7 @@ services:  # Определение сервисов
     command: python manage.py runserver 0.0.0.0:8000  # Команда запуска сервера Django
     depends_on:
       - redis  # Зависимость от сервиса Redis
-      - postgres 
+      - postgres
     env_file:
       - ./.env
 
@@ -30,7 +30,7 @@ services:  # Определение сервисов
       - django  # Зависимость от сервиса Django
 
   postgres: # Настройки сервиса PostgreSQL
-    container_name: django  # Имя контейнера
+    container_name: postgres  # Имя контейнера
     image: postgres:14.5  # Используемый образ PostgreSQL
     environment: # Переменные окружения для конфигурации базы данных
       POSTGRES_DB: ${NAME_DB}  # Имя вашей базы данных
@@ -39,5 +39,5 @@ services:  # Определение сервисов
     volumes:
       - postgres_data:/var/lib/postgresql/data  # Монтирование тома для данных базы данных
 
-  volumes:
-    postgres_data:  # Определение тома для данных PostgreSQL
+volumes:
+  postgres_data:  # Определение тома для данных PostgreSQL
