@@ -1,25 +1,17 @@
-FROM debian:buster-slim
-
-# Update package lists
-RUN apt-get update && apt-get upgrade -y
-
-# Install required packages
-RUN apt-get install -y --no-install-recommends \
-    build-essential \
-    python3-dev \
-    libpq-dev
-
-# Clean up
-RUN rm -rf /var/lib/apt/lists/*
+# Use a more recent base image (e.g., Ubuntu 20.04)
+FROM ubuntu:20.04
 
 # Set working directory
 WORKDIR /app
 
-# Copy requirements file
-COPY requirements.txt .
+# Copy the current directory contents into the container at /app
+COPY . /app
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    python3-dev \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy project files
-COPY . .
+# Rest of your Dockerfile instructions...
