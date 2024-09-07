@@ -1,20 +1,25 @@
-FROM python:3.9-slim-buster
+FROM debian:buster-slim
 
-WORKDIR /app
+# Update package lists
+RUN apt-get update && apt-get upgrade -y
 
-COPY requirements.txt .
-
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+# Install required packages
+RUN apt-get install -y --no-install-recommends \
     build-essential \
     python3-dev \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+    libpq-dev
 
-RUN pip3 install --upgrade pip setuptools wheel
+# Clean up
+RUN rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install --no-cache-dir -r requirements.txt
+# Set working directory
+WORKDIR /app
 
+# Copy requirements file
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy project files
 COPY . .
-
-CMD ["python3", "-u", "manage.py", "--host", "0.0.0.0", "--port", "8000"]
