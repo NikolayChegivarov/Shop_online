@@ -7,9 +7,9 @@ ENV http_proxy=http://79.174.91.58:8080
 ENV https_proxy=http://79.174.91.58:8080
 
 # Установка pip
-RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
-    python3 get-pip.py && \
-    rm get-pip.py
+RUN python3 -m ensurepip --default-pip-version=21.3 && \
+    python3 -m pip install --upgrade pip && \
+    python3 -m pip install --upgrade setuptools wheel
 
 # Установка переменных окружения
 RUN pip3 config set global.use_new_style_url=True && \
