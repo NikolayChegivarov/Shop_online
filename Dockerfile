@@ -7,7 +7,7 @@ ENV http_proxy=http://79.174.91.58:8080
 ENV https_proxy=http://79.174.91.58:8080
 
 # Установка pip
-RUN python3 -m ensurepip --default-pip-version=21.3 && \
+RUN python3 -m ensurepip && \
     python3 -m pip install --upgrade pip && \
     python3 -m pip install --upgrade setuptools wheel
 
