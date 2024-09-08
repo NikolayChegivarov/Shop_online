@@ -569,7 +569,7 @@ class PriceUpdate(APIView):
                 print(f'stream: {stream}')
 
                 data = load_yaml(stream, Loader=Loader)
-                print(f'data[]: {data['shop']}')
+                print(f'data[{index}]: {data[index]["shop"]}')
 
                 shop, _ = Shop.objects.get_or_create(name=data['shop'], user_id=request.user.id)
                 for category in data['categories']:

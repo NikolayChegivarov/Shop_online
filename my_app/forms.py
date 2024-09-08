@@ -3,7 +3,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.shortcuts import render, redirect
-from rest_framework.response import JsonResponse
+from rest_framework.response import Response
 
 from .models import (CustomUser, Contact, Order, Shop, ProductInfo,
                      ProductParameter, Category, Product,  Parameter, OrderItem)
