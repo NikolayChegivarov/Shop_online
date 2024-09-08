@@ -79,9 +79,6 @@ class AccountDetailsForm(forms.ModelForm):
         return cleaned_data
 
 
-
-
-
 class ContactForm(forms.ModelForm):
     city = forms.CharField(max_length=100, required=True)
     street = forms.CharField(max_length=200, required=True)

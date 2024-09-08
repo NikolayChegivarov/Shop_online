@@ -4,7 +4,7 @@ from ast import literal_eval
 from django.shortcuts import render
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
-from rest_framework.response import JsonResponse
+from rest_framework.response import Response
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth.password_validation import validate_password
@@ -569,7 +569,6 @@ class PriceUpdate(APIView):
                 print(f'stream: {stream}')
 
                 data = load_yaml(stream, Loader=Loader)
-                print(f'data[{index}]: {data[index]["shop"]}')
 
                 shop, _ = Shop.objects.get_or_create(name=data['shop'], user_id=request.user.id)
                 for category in data['categories']:
